@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>曹琳浩 · 个人简介</title>
+<meta name="description" content="曹琳浩 · 沈阳理工大学装备工程学院信息对抗技术专业大一学生，正在学习 C 语言与高等数学">
+<meta name="theme-color" content="#070b16">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='26' fill='%2338bdf8'/%3E%3Ctext x='50' y='70' font-size='58' text-anchor='middle' fill='%23071019' font-family='sans-serif' font-weight='bold'%3E曹%3C/text%3E%3C/svg%3E">
+<style>
+  /* ===== 设计变量：想换配色只改这里 ===== */
+  :root{
+    --bg:        #070b16;
+    --bg-soft:   #0c1222;
+    --panel:     rgba(255,255,255,.035);
+    --panel-2:   rgba(255,255,255,.06);
+    --line:      rgba(255,255,255,.09);
+    --line-2:    rgba(255,255,255,.16);
+    --text:      #e8eefc;
+    --muted:     #8d9bbd;
+    --accent:    #38bdf8;
+    --accent-2:  #a78bfa;
+    --accent-3:  #34d399;
+    --radius:    18px;
+    --maxw:      1100px;
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font:16px/1.75 "Segoe UI","Microsoft YaHei",system-ui,-apple-system,"PingFang SC",sans-serif;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  img{max-width:100%;display:block}
+  a{color:inherit;text-decoration:none}
+
+  /* ===== 背景：网格 + 双色光晕 + 星点 ===== */
+  .bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+  .bg .grid{
+    position:absolute;inset:-2px;
+    background-image:linear-gradient(var(--line) 1px,transparent 1px),
+                     linear-gradient(90deg,var(--line) 1px,transparent 1px);
+    background-size:64px 64px;
+    mask-image:radial-gradient(120% 90% at 50% 0%,#000 25%,transparent 78%);
+    -webkit-mask-image:radial-gradient(120% 90% at 50% 0%,#000 25%,transparent 78%);
+    opacity:.5;
+  }
+  .bg .glow{
+    position:absolute;border-radius:50%;filter:blur(90px);opacity:.5;
+    animation:float 16s ease-in-out infinite;
+  }
+  .bg .g1{width:52vw;height:52vw;left:-14vw;top:-16vw;background:radial-gradient(circle,rgba(56,189,248,.55),transparent 68%)}
+  .bg .g2{width:46vw;height:46vw;right:-12vw;top:2vw;background:radial-gradient(circle,rgba(167,139,250,.45),transparent 68%);animation-delay:-5s}
+  .bg .g3{width:40vw;height:40vw;left:32vw;top:46vh;background:radial-gradient(circle,rgba(52,211,153,.28),transparent 70%);animation-delay:-9s}
+  @keyframes float{
+    0%,100%{transform:translate3d(0,0,0) scale(1)}
+    50%{transform:translate3d(2vw,-3vh,0) scale(1.08)}
+  }
+  .bg .scan{
+    position:absolute;left:0;right:0;height:1px;
+    background:linear-gradient(90deg,transparent,rgba(56,189,248,.55),transparent);
+    animation:scan 7s linear infinite;opacity:.7;
+  }
+  @keyframes scan{0%{top:-5%}100%{top:105%}}
+
+  /* ===== 布局 ===== */
+  .wrap{width:min(var(--maxw),92vw);margin:0 auto;position:relative;z-index:1}
+  section{padding:88px 0}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:13px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin:0 0 14px;
+  }
+  .eyebrow::before{content:"";width:22px;height:1px;background:var(--accent);display:block}
+  h2.title{
+    font-size:clamp(24px,3.2vw,34px);line-height:1.25;margin:0 0 12px;
+    letter-spacing:-.02em;
+  }
+  .lead{color:var(--muted);max-width:62ch;margin:0}
+
+  /* ===== 顶部导航 ===== */
+  header.nav{
+    position:sticky;top:0;z-index:50;
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    background:rgba(7,11,22,.62);
+    border-bottom:1px solid transparent;
+    transition:border-color .3s,background .3s;
+  }
+  header.nav.stuck{border-bottom-color:var(--line);background:rgba(7,11,22,.86)}
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;height:64px}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.02em}
+  .logo .dot{
+    width:10px;height:10px;border-radius:50%;
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    box-shadow:0 0 16px rgba(56,189,248,.9);
+  }
+  .nav-links{display:flex;gap:4px;align-items:center}
+  .nav-links a{
+    padding:8px 14px;border-radius:999px;font-size:14.5px;color:var(--muted);
+    transition:color .2s,background .2s;
+  }
+  .nav-links a:hover,.nav-links a.active{color:var(--text);background:var(--panel-2)}
+  .nav-cta{
+    padding:9px 18px;border-radius:999px;font-size:14.5px;font-weight:600;
+    color:#05121c;background:linear-gradient(135deg,var(--accent),#7dd3fc);
+    box-shadow:0 8px 24px rgba(56,189,248,.28);
+    transition:transform .2s,box-shadow .2s;white-space:nowrap;
+  }
+  .nav-cta:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(56,189,248,.42)}
+  .burger{display:none;background:none;border:1px solid var(--line-2);color:var(--text);
+    width:40px;height:38px;border-radius:10px;font-size:18px;cursor:pointer}
+
+  /* ===== 首屏 ===== */
+  .hero{padding:clamp(56px,10vh,110px) 0 72px;position:relative}
+  .hero-grid{display:grid;grid-template-columns:1.35fr .9fr;gap:56px;align-items:center}
+  .status{
+    display:inline-flex;align-items:center;gap:9px;
+    padding:6px 14px;border-radius:999px;font-size:13.5px;color:var(--muted);
+    background:var(--panel);border:1px solid var(--line);
+  }
+  .pulse{width:8px;height:8px;border-radius:50%;background:var(--accent-3);
+    box-shadow:0 0 0 0 rgba(52,211,153,.7);animation:pulse 2s infinite}
+  @keyframes pulse{
+    70%{box-shadow:0 0 0 10px rgba(52,211,153,0)}
+    100%{box-shadow:0 0 0 0 rgba(52,211,153,0)}
+  }
+  .hero h1{
+    font-size:clamp(38px,6.4vw,68px);line-height:1.06;margin:20px 0 0;
+    letter-spacing:-.035em;font-weight:800;
+  }
+  .hero h1 .grad{
+    background:linear-gradient(100deg,var(--accent) 8%,var(--accent-2) 52%,var(--accent-3) 96%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .role{
+    margin:18px 0 0;font-size:clamp(17px,2.2vw,21px);color:var(--text);font-weight:600;
+  }
+  .role .sep{color:var(--accent);margin:0 10px;font-weight:400}
+  .hero p.bio{color:var(--muted);margin:18px 0 0;max-width:56ch;font-size:16.5px}
+  .typed{color:var(--accent);font-weight:700}
+  .caret{display:inline-block;width:9px;height:1.05em;background:var(--accent);
+    vertical-align:-.16em;margin-left:3px;animation:blink 1s steps(2) infinite}
+  @keyframes blink{50%{opacity:0}}
+
+  .hero-actions{display:flex;flex-wrap:wrap;gap:14px;margin-top:32px}
+  .btn{
+    display:inline-flex;align-items:center;gap:9px;
+    padding:13px 24px;border-radius:12px;font-weight:600;font-size:15px;
+    border:1px solid var(--line-2);background:var(--panel);
+    transition:transform .2s,border-color .2s,background .2s,box-shadow .2s;
+  }
+  .btn:hover{transform:translateY(-2px);border-color:var(--accent);background:var(--panel-2)}
+  .btn.primary{
+    color:#05121c;border-color:transparent;
+    background:linear-gradient(135deg,var(--accent),#7dd3fc);
+    box-shadow:0 10px 30px rgba(56,189,248,.3);
+  }
+  .btn.primary:hover{box-shadow:0 14px 36px rgba(56,189,248,.45)}
+
+  .socials{display:flex;gap:12px;margin-top:28px}
+  .socials a{
+    width:42px;height:42px;border-radius:12px;display:grid;place-items:center;
+    background:var(--panel);border:1px solid var(--line);color:var(--muted);
+    transition:all .2s;
+  }
+  .socials a:hover{color:var(--accent);border-color:var(--accent);transform:translateY(-3px)}
+
+  /* ===== 头像 ===== */
+  .avatar-wrap{position:relative;justify-self:center}
+  .avatar-ring{
+    width:clamp(200px,26vw,280px);aspect-ratio:1;border-radius:50%;
+    padding:5px;background:conic-gradient(from 0deg,var(--accent),var(--accent-2),var(--accent-3),var(--accent));
+    animation:spin 9s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .avatar{
+    width:100%;height:100%;border-radius:50%;overflow:hidden;
+    background:linear-gradient(160deg,#111a30,#0a1120);
+    display:grid;place-items:center;
+    position:relative;
+  }
+  /* 圆内文字：字号自动适配，字多了也不会顶到圆边上 */
+  .avatar span{
+    --chars:1;                        /* 圆里的字数，改文字时同步改这里 */
+    /* 字号按字数自适应，同时用 min() 限制上限，字少的时候不会撑破圆形 */
+    font-size:min(104px, calc(clamp(200px,26vw,280px) * 0.75 / var(--chars)));
+    font-weight:800;letter-spacing:.02em;line-height:1;
+    white-space:nowrap;
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    animation:spin 9s linear infinite reverse;
+  }
+  .avatar img{width:100%;height:100%;object-fit:cover;animation:spin 9s linear infinite reverse}
+  .chip-float{
+    position:absolute;padding:8px 14px;border-radius:999px;font-size:13px;font-weight:600;
+    background:rgba(10,17,32,.86);border:1px solid var(--line-2);
+    backdrop-filter:blur(8px);white-space:nowrap;
+    animation:bob 5s ease-in-out infinite;
+  }
+  .chip-float.c1{top:6%;left:-8%;color:var(--accent)}
+  .chip-float.c2{bottom:14%;right:-10%;color:var(--accent-2);animation-delay:-2.4s}
+  .chip-float.c3{bottom:-2%;left:2%;color:var(--accent-3);animation-delay:-3.6s}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-11px)}}
+
+  /* ===== 数据条 ===== */
+  .stats{
+    display:grid;grid-template-columns:repeat(2,1fr);gap:1px;
+    background:var(--line);border:1px solid var(--line);
+    border-radius:var(--radius);overflow:hidden;margin-top:64px;
+  }
+  .stat{background:var(--bg-soft);padding:24px 20px;text-align:center}
+  .stat b{
+    display:block;font-size:clamp(26px,3.4vw,36px);font-weight:800;letter-spacing:-.02em;
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .stat small{color:var(--muted);font-size:13.5px;letter-spacing:.04em}
+
+  /* ===== 关于 ===== */
+  .about{display:grid;grid-template-columns:1.2fr .8fr;gap:52px;align-items:start}
+  .about p{color:var(--muted);margin:0 0 16px}
+  .about p strong{color:var(--text);font-weight:600}
+  .facts{display:grid;gap:12px}
+  .fact{
+    display:flex;gap:14px;align-items:flex-start;
+    padding:16px 18px;border-radius:14px;
+    background:var(--panel);border:1px solid var(--line);
+    transition:border-color .2s,transform .2s;
+  }
+  .fact:hover{border-color:var(--line-2);transform:translateX(4px)}
+  .fact .ic{
+    flex:0 0 34px;height:34px;border-radius:10px;display:grid;place-items:center;
+    background:linear-gradient(135deg,rgba(56,189,248,.18),rgba(167,139,250,.18));
+    color:var(--accent);font-size:16px;
+  }
+  .fact b{display:block;font-size:14.5px}
+  .fact span{color:var(--muted);font-size:13.5px}
+  /* 信息卡里的文字链接（比如 绝区零）：保持普通文字大小，只靠颜色和虚线下划线提示可点 */
+  .fact-link{
+    color:var(--accent);font-weight:600;
+    text-decoration:underline dotted;text-underline-offset:3px;
+    transition:color .2s,text-decoration-color .2s;
+  }
+  .fact-link:hover{color:var(--text);text-decoration:underline solid}
+
+  /* ===== 游戏（平时喜欢） ===== */
+  .hobby{
+    display:flex;align-items:flex-start;gap:22px;margin-top:38px;
+    padding:clamp(22px,3vw,34px);border-radius:var(--radius);
+    background:linear-gradient(135deg,rgba(56,189,248,.10),rgba(167,139,250,.07) 60%,transparent);
+    border:1px solid var(--line);
+  }
+  .hobby-ic{
+    flex:0 0 52px;height:52px;border-radius:14px;display:grid;place-items:center;font-size:23px;
+    background:linear-gradient(135deg,rgba(56,189,248,.18),rgba(167,139,250,.18));
+    border:1px solid var(--line-2);
+  }
+  .hobby-lead{margin:0 0 20px;color:var(--muted);font-size:15px}
+  .hobby-body{min-width:0;flex:1}
+  /* 每个游戏一块：左边可点的游戏名，右边介绍 */
+  .game{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+  .game + .game{margin-top:20px;padding-top:20px;border-top:1px solid var(--line)}
+  .game-info{flex:1 1 300px;min-width:0}
+  .game-tag{
+    margin:0 0 6px;font-size:13px;font-weight:600;color:var(--accent);
+    letter-spacing:.02em;
+  }
+  .game-desc{margin:0;font-size:14px;line-height:1.75;color:var(--muted)}
+  .hobby-link{
+    display:inline-flex;align-items:center;gap:9px;
+    padding:12px 22px;border-radius:12px;
+    font-size:15.5px;font-weight:600;color:var(--accent);
+    background:var(--panel);border:1px solid rgba(56,189,248,.4);
+    transition:transform .2s,border-color .2s,color .2s,box-shadow .2s,background .2s;
+  }
+  .hobby-link > span{font-size:13px;opacity:.75}
+  .hobby-link:hover{
+    color:var(--text);border-color:var(--accent);background:var(--panel-2);
+    transform:translateY(-2px);box-shadow:0 10px 26px rgba(56,189,248,.22);
+  }
+  /* 看书这一项：点左边的 📖 十日终焉 去番茄小说，用紫色和游戏的蓝色区分 */
+  .hobby-link.book{color:var(--accent-2);border-color:rgba(167,139,250,.42);gap:8px}
+  .hobby-link.book:hover{
+    color:var(--text);border-color:var(--accent-2);background:var(--panel-2);
+    box-shadow:0 10px 26px rgba(167,139,250,.24);
+  }
+  .lk-ic{font-size:16px}
+
+  /* ===== 小游戏 ===== */
+  .mini{
+    display:flex;justify-content:center;
+    margin-top:34px;padding:clamp(22px,3vw,32px);border-radius:var(--radius);
+    background:linear-gradient(135deg,rgba(251,191,36,.09),rgba(167,139,250,.08) 60%,transparent);
+    border:1px solid var(--line);
+  }
+  .mini-btn{
+    display:inline-flex;align-items:center;gap:10px;flex:0 0 auto;
+    padding:14px 30px;border-radius:14px;
+    font-size:16.5px;font-weight:700;letter-spacing:.01em;color:#2a1a02;
+    background:linear-gradient(135deg,#fbbf24,#fb923c);
+    box-shadow:0 10px 30px rgba(251,146,60,.32);
+    transition:transform .2s,box-shadow .2s,filter .2s;
+  }
+  .mini-btn span{font-size:13px;opacity:.7}
+  .mini-btn:hover{
+    transform:translateY(-3px);filter:brightness(1.06);
+    box-shadow:0 16px 38px rgba(251,146,60,.48);
+  }
+
+  /* ===== 时间线 ===== */
+  .timeline{position:relative;margin-top:44px;padding-left:34px}
+  .timeline::before{
+    content:"";position:absolute;left:9px;top:6px;bottom:6px;width:1px;
+    background:linear-gradient(180deg,var(--accent),var(--accent-2),transparent);
+  }
+  .tl-item{position:relative;padding-bottom:36px}
+  .tl-item:last-child{padding-bottom:0}
+  .tl-item::before{
+    content:"";position:absolute;left:-30px;top:7px;width:11px;height:11px;border-radius:50%;
+    background:var(--bg);border:2px solid var(--accent);
+    box-shadow:0 0 0 4px rgba(56,189,248,.14);
+  }
+  .tl-item time{font-size:13px;color:var(--accent);font-weight:600;letter-spacing:.04em}
+  .tl-item h3{margin:5px 0 4px;font-size:17.5px}
+  .tl-item .org{color:var(--muted);font-size:14px;margin:0 0 8px}
+  .tl-item p{margin:0;color:var(--muted);font-size:14.5px;max-width:70ch}
+
+  /* ===== 联系 ===== */
+  .contact-box{
+    margin-top:38px;padding:clamp(30px,4.4vw,52px);border-radius:24px;
+    background:linear-gradient(150deg,rgba(56,189,248,.12),rgba(167,139,250,.08) 55%,transparent);
+    border:1px solid var(--line-2);text-align:center;position:relative;overflow:hidden;
+  }
+  .contact-box h2{font-size:clamp(24px,3.4vw,34px);margin:0 0 12px;letter-spacing:-.02em}
+  .contact-box p{color:var(--muted);margin:0 auto 28px;max-width:48ch}
+  .contact-lines{display:flex;flex-wrap:wrap;gap:14px;justify-content:center}
+  .contact-line{
+    display:inline-flex;align-items:center;gap:10px;
+    padding:12px 20px;border-radius:12px;font-size:14.5px;
+    background:rgba(7,11,22,.55);border:1px solid var(--line-2);
+    transition:all .2s;
+  }
+  .contact-line:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px)}
+
+  /* 联系区底部的身份信息：加了细分隔线，和上面几张可点击的卡片明确区分开 */
+  .contact-box p.contact-meta{
+    margin:30px auto 0;padding-top:22px;
+    border-top:1px solid var(--line);
+    color:var(--muted);font-size:13px;line-height:2;
+    letter-spacing:.02em;max-width:56ch;
+  }
+  .contact-meta span{display:inline-block;white-space:nowrap}
+  .contact-meta i{font-style:normal;color:var(--line-2);margin:0 12px}
+
+  footer{
+    border-top:1px solid var(--line);padding:30px 0;
+    color:var(--muted);font-size:13.5px;
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
+  }
+  footer .up{color:var(--accent)}
+
+  /* ===== 滚动进场动画 ===== */
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .75s ease,transform .75s cubic-bezier(.22,1,.36,1)}
+  .reveal.in{opacity:1;transform:none}
+
+  /* ===== 响应式 ===== */
+  @media (max-width:940px){
+    .hero-grid,.about{grid-template-columns:1fr;gap:44px}
+    .avatar-wrap{order:-1;justify-self:start}
+  }
+  @media (max-width:680px){
+    .nav-links{
+      position:absolute;top:64px;left:0;right:0;flex-direction:column;
+      background:rgba(7,11,22,.97);border-bottom:1px solid var(--line);
+      padding:14px;gap:6px;display:none;
+    }
+    .nav-links.open{display:flex}
+    .nav-links a{padding:11px 14px}
+    .burger{display:block}
+    .nav-cta{display:none}
+    section{padding:64px 0}
+    .chip-float.c1{left:0}
+    .chip-float.c2{right:0}
+    .hobby{gap:16px}
+    .hobby-ic{flex-basis:44px;height:44px;font-size:20px}
+    .game{gap:12px}
+    .hobby-link{flex:1 1 auto;justify-content:center}
+    .game-info{flex-basis:100%}
+    .mini-btn{flex:1 1 auto;justify-content:center}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important;transition-duration:.01ms!important}
+    .reveal{opacity:1;transform:none}
+  }
+</style>
+</head>
+<body>
+
+<!-- 背景层 -->
+<div class="bg" aria-hidden="true">
+  <div class="grid"></div>
+  <div class="glow g1"></div>
+  <div class="glow g2"></div>
+  <div class="glow g3"></div>
+  <div class="scan"></div>
+</div>
+
+<!-- 导航 -->
+<header class="nav" id="nav">
+  <div class="wrap nav-inner">
+    <a class="logo" href="#top"><span class="dot"></span>曹琳浩</a>
+    <nav class="nav-links" id="navLinks">
+      <a href="#about">关于</a>
+      <a href="#games">游戏</a>
+      <a href="#minigame">小游戏</a>
+      <a href="#skills">学习</a>
+      <a href="#experience">经历</a>
+      <a href="#contact">联系</a>
+    </nav>
+    <a class="nav-cta" href="#contact">联系我</a>
+    <button class="burger" id="burger" aria-label="菜单">☰</button>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ===== 首屏 ===== -->
+  <section class="hero">
+    <div class="wrap">
+      <div class="hero-grid">
+        <div>
+          <span class="status"><span class="pulse"></span>沈阳理工大学 · 大一在读</span>
+          <h1>你好，我是<br><span class="grad">曹琳浩</span></h1>
+          <p class="role">
+            装备工程学院 · 信息对抗技术
+            <span class="sep">/</span>
+            <span class="typed" id="typed"></span><span class="caret"></span>
+          </p>
+          <p class="bio">
+            我是装备工程学院信息对抗技术专业的大一学生，目前把主要精力放在 <strong>C 语言</strong> 和
+            <strong>高等数学</strong> 上，一边打牢编程基础，一边补数学功底。
+            喜欢把学到的东西动手做出来 —— 这个网页就是我自己写的。
+          </p>
+          <div class="hero-actions">
+            <a class="btn primary" href="#skills">看看我在学什么 →</a>
+            <a class="btn" href="#contact">✉ 联系方式</a>
+          </div>
+          <div class="socials">
+            <a href="mailto:34919494@qq.com" title="邮箱 34919494@qq.com" aria-label="邮箱">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2.5" y="4.5" width="19" height="15" rx="2.5"/><path d="m3 7 9 6 9-6"/></svg>
+            </a>
+            <a href="tel:13840672567" title="电话 / 微信：13840672567" aria-label="电话或微信：13840672567">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6.6 3h2.7l1.4 4-2 1.4a12 12 0 0 0 6.9 6.9l1.4-2 4 1.4v2.7c0 1.1-.9 2-2 2A15.5 15.5 0 0 1 4.6 5c0-1.1.9-2 2-2z"/></svg>
+            </a>
+            <a href="https://wpa.qq.com/msgrd?v=3&uin=34919494" title="QQ 34919494" aria-label="QQ">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.2c-3.1 0-5.1 2.2-5.1 5 0 .8-.3 1.3-.9 2-1 1.1-1.4 2.2-1.4 3.1 0 .7.5 1 1 1 .3 0 .6-.1.8-.3.3 1 .9 1.9 1.7 2.5-.6.3-.9.7-.9 1.1 0 .9 1.7 1.6 4.8 1.6s4.8-.7 4.8-1.6c0-.4-.3-.8-.9-1.1.8-.6 1.4-1.5 1.7-2.5.2.2.5.3.8.3.5 0 1-.3 1-1 0-.9-.4-2-1.4-3.1-.6-.7-.9-1.2-.9-2 0-2.8-2-5-5.1-5z"/></svg>
+            </a>
+            <a href="https://github.com/hulue-lin" target="_blank" rel="noopener noreferrer" title="GitHub：hulue-lin" aria-label="GitHub 主页">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.1.1 1.7 1.2 1.7 1.2 1 1.8 2.7 1.3 3.4 1 .1-.7.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.8 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.5-2.7 5.5-5.3 5.8.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6 4.6-1.5 7.9-5.8 7.9-10.9C23.5 5.7 18.3.5 12 .5z"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="avatar-wrap">
+          <div class="avatar-ring">
+            <div class="avatar">
+              <!-- 想换成真实照片：把下面的 span 换成 img src="avatar.jpg" alt="头像" -->
+              <span>琳</span>
+            </div>
+          </div>
+          <div class="chip-float c1">⚡ 在读大一</div>
+          <div class="chip-float c2">◆ 学 C 语言</div>
+          <div class="chip-float c3">★ 高数进行中</div>
+        </div>
+      </div>
+
+      <!-- 数据条 -->
+      <div class="stats reveal">
+        <div class="stat"><b><span class="count" data-to="1">0</span></b><small>在读年级（大一）</small></div>
+        <div class="stat"><b><span class="count" data-to="2">0</span></b><small>正在主攻的课程</small></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 关于 ===== -->
+  <section id="about">
+    <div class="wrap">
+      <p class="eyebrow reveal">About</p>
+      <h2 class="title reveal">关于我</h2>
+      <div class="about" style="margin-top:34px">
+        <div class="reveal">
+          <p>我是 <strong>曹琳浩</strong>，沈阳理工大学装备工程学院信息对抗技术专业的大一学生。
+             刚进大学没多久，正处在一个把基础打牢的阶段，
+             所以我把大部分时间花在两件事上：<strong>C 语言</strong> 和 <strong>高等数学</strong>。</p>
+          <p>我们专业和电子信息、网络安全这些方向关系很近，学的东西偏底层。
+             也正因为这样，学 C 语言对我来说不只是应付老师 ——
+             我想真正搞清楚程序在底层是怎么跑的：变量、指针、内存、循环，
+             这些看起来枯燥的东西，恰恰是后面学数据结构、算法和操作系统的地基。
+             同时我在啃高数，因为它决定了以后能不能看懂更硬的技术内容。</p>
+        </div>
+        <div class="facts reveal">
+          <div class="fact"><div class="ic">◎</div><div><b>所在学校</b><span>沈阳理工大学 · 大一在读</span></div></div>
+          <div class="fact"><div class="ic">📍</div><div><b>家乡</b><span>辽宁锦州 —— 有空来，我带你吃正宗的 <a class="fact-link" href="https://baike.baidu.com/item/%E9%94%A6%E5%B7%9E%E7%83%A7%E7%83%A4/772634" target="_blank" rel="noopener noreferrer" title="看看锦州烧烤是什么">锦州烧烤</a></span></div></div>
+          <div class="fact"><div class="ic">◈</div><div><b>学院 / 专业</b><span>装备工程学院 · 信息对抗技术</span></div></div>
+          <div class="fact"><div class="ic">◆</div><div><b>正在主攻</b><span>C 语言 · 高等数学</span></div></div>
+          <div class="fact"><div class="ic">✦</div><div><b>生日</b><span>6 月 1 日</span></div></div>
+          <div class="fact"><div class="ic">✆</div><div><b>电话 / 微信</b><span>13840672567</span></div></div>
+          <div class="fact"><div class="ic">✉</div><div><b>邮箱 / QQ</b><span>34919494@qq.com · QQ 34919494</span></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 游戏 ===== -->
+  <section id="games">
+    <div class="wrap">
+      <p class="eyebrow reveal">Games</p>
+      <h2 class="title reveal">平时喜欢</h2>
+
+      <div class="hobby reveal">
+        <div class="hobby-ic">🎮</div>
+        <div class="hobby-body">
+          <p class="hobby-lead">打游戏和看小说是我最主要的放松方式，现在常玩 / 常看这些。</p>
+
+          <div class="game">
+            <a class="hobby-link" href="https://zzz.mihoyo.com/cloud-feat/" target="_blank" rel="noopener noreferrer" title="打开《云·绝区零》官网">绝区零<span>↗</span></a>
+            <div class="game-info">
+              <p class="game-tag">开服玩家 · UID 25282274</p>
+              <p class="game-desc">目前在养老，不追求强度，主要看看剧情、打打活动。</p>
+            </div>
+          </div>
+
+          <div class="game">
+            <a class="hobby-link" href="https://m.yjwujian.cn/" target="_blank" rel="noopener noreferrer" title="打开《永劫无间》手游官网">永劫无间<span>↗</span></a>
+            <div class="game-info">
+              <p class="game-tag">开服玩家 · 全勤玩家 · ID 辞落花</p>
+              <p class="game-desc">从开服玩到现在一直没断过，欢迎来找我切磋刀法。</p>
+            </div>
+          </div>
+
+          <div class="game">
+            <a class="hobby-link book" href="https://fanqienovel.com/page/7143038691944959011" target="_blank" rel="noopener noreferrer" title="去番茄小说看《十日终焉》"><span class="lk-ic">📖</span>十日终焉</a>
+            <div class="game-info">
+              <p class="game-desc">最近在看 十日终焉，有没有书友？</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 小游戏 ===== -->
+  <section id="minigame">
+    <div class="wrap">
+      <p class="eyebrow reveal">Mini Game</p>
+      <h2 class="title reveal">玩个小游戏？</h2>
+
+      <div class="mini reveal">
+        <a class="mini-btn" href="https://yhsome.github.io/BigNaiWa/" target="_blank" rel="noopener noreferrer">我尝尝咸淡<span>↗</span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 技能 ===== -->
+  <section id="skills">
+    <div class="wrap">
+      <p class="eyebrow reveal">Learning</p>
+      <h2 class="title reveal">正在学习</h2>
+      <p class="lead reveal">C 语言和高等数学是我现在最主要的两门课，其他都算是围绕它们慢慢补的。</p>
+    </div>
+  </section>
+
+  <!-- ===== 经历 ===== -->
+  <section id="experience">
+    <div class="wrap">
+      <p class="eyebrow reveal">Experience</p>
+      <h2 class="title reveal">经历</h2>
+
+      <div class="timeline">
+        <div class="tl-item reveal">
+          <time>2026 年 9 月 — 至今</time>
+          <h3>沈阳理工大学 · 装备工程学院</h3>
+          <p class="org">信息对抗技术专业 · 本科 · 沈阳</p>
+          <p>刚入学没多久，正处在打基础的阶段。目前的主要任务是学好 C 语言和高等数学，
+             同时开始接触网页开发，把课堂外的时间用来动手做点小东西。</p>
+        </div>
+        <div class="tl-item reveal">
+          <time>2023 — 2026</time>
+          <h3>高中阶段</h3>
+          <p class="org">高中 · 凌海市第一高级中学</p>
+          <p>高中的三年让我养成了比较规律的做题习惯。真正对计算机产生兴趣，也是在这段时间 ——
+             从好奇「程序是怎么运行的」，到决定把它当成以后要走的方向。</p>
+        </div>
+        <div class="tl-item reveal">
+          <time>接下来</time>
+          <h3>正在计划的事</h3>
+          <p class="org">短期目标 ·</p>
+          <p>把 C 语言和数据结构学扎实，能独立写出几百行的小程序；高数不掉队；
+             我还想学学python；还有加入中国共产党。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 联系 ===== -->
+  <section id="contact">
+    <div class="wrap">
+      <div class="contact-box reveal">
+        <p class="eyebrow" style="justify-content:center">Contact</p>
+        <h2>聊聊吧</h2>
+        <p>不管是交流学习、讨论 C 语言和高数，还是想一起做点小项目，都欢迎直接找我。</p>
+        <div class="contact-lines">
+          <a class="contact-line" href="tel:13840672567">✆ 电话 / 微信：13840672567</a>
+          <a class="contact-line" href="mailto:34919494@qq.com">✉ 邮箱：34919494@qq.com</a>
+          <a class="contact-line" href="https://wpa.qq.com/msgrd?v=3&uin=34919494">⌘ QQ：34919494</a>
+        </div>
+        <p class="contact-meta">
+          <span>沈阳理工大学 · 装备工程学院 · 信息对抗技术</span><i>｜</i><span>大一在读</span><i>｜</i><span>生日 6 月 1 日</span>
+        </p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap" style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px">
+    <span>© <span id="year"></span> 曹琳浩 · 保留所有权利</span>
+    <a class="up" href="#top">回到顶部 ↑</a>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  /* 1. 导航：滚动加边框 + 当前区块高亮 */
+  var nav = document.getElementById('nav');
+  var links = Array.prototype.slice.call(document.querySelectorAll('.nav-links a'));
+  var sections = links.map(function(a){ return document.querySelector(a.getAttribute('href')); });
+
+  function onScroll(){
+    nav.classList.toggle('stuck', window.scrollY > 8);
+    var pos = window.scrollY + 140, current = -1;
+    sections.forEach(function(s, i){ if (s && s.offsetTop <= pos) current = i; });
+    links.forEach(function(a, i){ a.classList.toggle('active', i === current); });
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  /* 2. 移动端菜单 */
+  var burger = document.getElementById('burger');
+  var navLinks = document.getElementById('navLinks');
+  burger.addEventListener('click', function(){ navLinks.classList.toggle('open'); });
+  navLinks.addEventListener('click', function(e){
+    if (e.target.tagName === 'A') navLinks.classList.remove('open');
+  });
+
+  /* 3. 打字机效果：改成你自己的关键词 */
+  var words = ['正在学 C 语言', '正在啃高等数学', '信息对抗技术专业'];
+  var typed = document.getElementById('typed');
+  var wi = 0, ci = 0, deleting = false;
+  function tick(){
+    var w = words[wi];
+    ci += deleting ? -1 : 1;
+    typed.textContent = w.slice(0, ci);
+    var delay = deleting ? 55 : 115;
+    if (!deleting && ci === w.length){ deleting = true; delay = 1500; }
+    else if (deleting && ci === 0){ deleting = false; wi = (wi + 1) % words.length; delay = 350; }
+    setTimeout(tick, delay);
+  }
+  if (words.length) tick();
+
+  /* 4. 滚动进场 + 数字滚动（只触发一次） */
+  var counted = new WeakSet();
+
+  function animateCount(el){
+    var to = parseFloat(el.dataset.to) || 0;
+    var start = performance.now(), dur = 1400;
+    (function step(now){
+      var p = Math.min((now - start) / dur, 1);
+      var eased = 1 - Math.pow(1 - p, 3);
+      el.textContent = Math.round(to * eased);
+      if (p < 1) requestAnimationFrame(step);
+    })(start);
+  }
+
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if (!entry.isIntersecting) return;
+      var el = entry.target;
+      el.classList.add('in');
+
+      el.querySelectorAll('.count').forEach(function(c){
+        if (!counted.has(c)){ counted.add(c); animateCount(c); }
+      });
+
+      io.unobserve(el);
+    });
+  }, {threshold:0.16, rootMargin:'0px 0px -60px 0px'});
+
+  document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+
+  /* 5. 年份 */
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+})();
+</script>
+</body>
+</html>
