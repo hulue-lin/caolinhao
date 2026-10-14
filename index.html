@@ -370,18 +370,13 @@
 
   /* ===== 游戏（平时喜欢） ===== */
   .hobby{
-    display:flex;align-items:flex-start;gap:22px;margin-top:38px;
+    margin-top:38px;
     padding:clamp(22px,3vw,34px);border-radius:var(--radius);
     background:linear-gradient(135deg,var(--tint-1),var(--tint-2) 60%,transparent);
     border:1px solid var(--line);
   }
-  .hobby-ic{
-    flex:0 0 52px;height:52px;border-radius:14px;display:grid;place-items:center;font-size:23px;
-    background:linear-gradient(135deg,var(--tint-1),var(--tint-2));
-    border:1px solid var(--line-2);
-  }
   .hobby-lead{margin:0 0 20px;color:var(--muted);font-size:15px}
-  .hobby-body{min-width:0;flex:1}
+  .hobby-body{min-width:0}
   /* 每个游戏一块：左边可点的游戏名，右边介绍 */
   .game{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
   .game + .game{margin-top:20px;padding-top:20px;border-top:1px solid var(--line)}
@@ -391,25 +386,37 @@
     letter-spacing:.02em;
   }
   .game-desc{margin:0;font-size:14px;line-height:1.75;color:var(--muted)}
+
+  /* 三个条目的芯片统一成「图标 + 名称 + 外链箭头」：
+       游戏用蓝色、书用紫色，结构和尺寸完全一致。 */
   .hobby-link{
-    display:inline-flex;align-items:center;gap:9px;
+    display:inline-flex;align-items:center;gap:10px;
     padding:12px 22px;border-radius:12px;
     font-size:15.5px;font-weight:600;color:var(--accent);
     background:var(--panel);border:1px solid var(--link-line);
     transition:transform .2s,border-color .2s,color .2s,box-shadow .2s,background .2s;
   }
-  .hobby-link > span{font-size:13px;opacity:.75}
+  /* 前面的图标：正常大小、不透明 */
+  .hobby-link .lk-ic{
+    font-size:16px;line-height:1;opacity:1;
+    display:inline-block;
+  }
+  /* 末尾的外链箭头：小一号、半透明，和游戏按钮里的 ↗ 一致 */
+  .hobby-link .lk-go{
+    font-size:13px;line-height:1;opacity:.6;
+    display:inline-block;
+  }
   .hobby-link:hover{
     color:var(--text);border-color:var(--accent);background:var(--panel-2);
     transform:translateY(-2px);box-shadow:0 10px 26px var(--glow-c);
   }
-  /* 看书这一项：点左边的 📖 十日终焉 去番茄小说，用紫色和游戏的蓝色区分 */
-  .hobby-link.book{color:var(--accent-2);border-color:var(--violet-line);gap:8px}
+  .hobby-link:hover .lk-go{opacity:1}
+  /* 看书这一项：同样的结构，换成紫色以便和游戏区分 */
+  .hobby-link.book{color:var(--accent-2);border-color:var(--violet-line)}
   .hobby-link.book:hover{
     color:var(--text);border-color:var(--accent-2);background:var(--panel-2);
     box-shadow:0 10px 26px var(--glow-c);
   }
-  .lk-ic{font-size:16px}
 
   /* ===== 小游戏 =====
      两个游戏用同一套卡片样式，只有按钮里那个 ↗ 和角标文字区分外链 / 本页玩 */
@@ -609,8 +616,6 @@
     section{padding:64px 0}
     .chip-float.c1{left:0}
     .chip-float.c2{right:0}
-    .hobby{gap:16px}
-    .hobby-ic{flex-basis:44px;height:44px;font-size:20px}
     .game{gap:12px}
     .hobby-link{flex:1 1 auto;justify-content:center}
     .game-info{flex-basis:100%}
@@ -810,12 +815,11 @@
       <h2 class="title reveal">平时喜欢</h2>
 
       <div class="hobby reveal">
-        <div class="hobby-ic">🎮</div>
         <div class="hobby-body">
           <p class="hobby-lead">打游戏和看小说是我最主要的放松方式，现在常玩 / 常看这些。</p>
 
           <div class="game">
-            <a class="hobby-link" href="https://zzz.mihoyo.com/cloud-feat/" target="_blank" rel="noopener noreferrer" title="打开《云·绝区零》官网">绝区零<span>↗</span></a>
+            <a class="hobby-link" href="https://zzz.mihoyo.com/cloud-feat/" target="_blank" rel="noopener noreferrer" title="打开《云·绝区零》官网"><span class="lk-ic">🎮</span>绝区零<span class="lk-go">↗</span></a>
             <div class="game-info">
               <p class="game-tag">开服玩家 · UID 25282274</p>
               <p class="game-desc">目前在养老，不追求强度，主要看看剧情、打打活动。</p>
@@ -823,7 +827,7 @@
           </div>
 
           <div class="game">
-            <a class="hobby-link" href="https://m.yjwujian.cn/" target="_blank" rel="noopener noreferrer" title="打开《永劫无间》手游官网">永劫无间<span>↗</span></a>
+            <a class="hobby-link" href="https://m.yjwujian.cn/" target="_blank" rel="noopener noreferrer" title="打开《永劫无间》手游官网"><span class="lk-ic">🎮</span>永劫无间<span class="lk-go">↗</span></a>
             <div class="game-info">
               <p class="game-tag">开服玩家 · 全勤玩家 · ID 辞落花</p>
               <p class="game-desc">从开服玩到现在一直没断过，欢迎来找我切磋刀法。</p>
@@ -831,7 +835,7 @@
           </div>
 
           <div class="game">
-            <a class="hobby-link book" href="https://fanqienovel.com/page/7143038691944959011" target="_blank" rel="noopener noreferrer" title="去番茄小说看《十日终焉》"><span class="lk-ic">📖</span>十日终焉</a>
+            <a class="hobby-link book" href="https://fanqienovel.com/page/7143038691944959011" target="_blank" rel="noopener noreferrer" title="去番茄小说看《十日终焉》"><span class="lk-ic">📖</span>十日终焉<span class="lk-go">↗</span></a>
             <div class="game-info">
               <p class="game-desc">最近在看 十日终焉，有没有书友？</p>
             </div>
@@ -855,14 +859,13 @@
           <p class="gcard-desc">合成类小游戏，玩法简单，一不留神就能玩很久。</p>
           <div class="gcard-foot">
             <a class="gcard-btn" href="https://yhsome.github.io/BigNaiWa/" target="_blank" rel="noopener noreferrer">我尝尝咸淡<span>↗</span></a>
-            <small>会跳到另一个网站</small>
           </div>
         </article>
 
         <article class="gcard">
           <span class="gcard-tag">本页</span>
           <h3 class="gcard-title">躲陨石</h3>
-          <p class="gcard-desc">我照着上面的样子自己写的小游戏。鼠标或手指带着飞船躲开陨石，点一下开火，撑到 60 秒算通关。</p>
+          <p class="gcard-desc">鼠标或手指带着飞船躲开陨石，点一下开火，撑到 60 秒算通关。</p>
           <div class="gcard-foot">
             <button class="gcard-btn" id="gameBtn" type="button">开始游戏</button>
             <small>鼠标 / WASD / 方向键，空格开火</small>
