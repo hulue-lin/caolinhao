@@ -478,6 +478,15 @@
   }
   .gstage-hud b{color:var(--text);font-weight:700}
   .gstage-msg{margin-left:auto;color:var(--accent);font-weight:600}
+  /* 游戏进行中才出现的「结束游戏」按钮 */
+  .gquit{
+    flex:0 0 auto;margin-left:14px;
+    padding:7px 16px;border-radius:9px;
+    font:inherit;font-size:13px;font-weight:600;cursor:pointer;
+    color:var(--muted);background:var(--panel-2);border:1px solid var(--line-2);
+    transition:color .2s,border-color .2s,background .2s;
+  }
+  .gquit:hover{color:var(--text);border-color:var(--accent);background:var(--panel)}
 
   .gcard-fallback{
     margin:20px 0 0;padding:14px 18px;border-radius:12px;
@@ -621,6 +630,8 @@
     .game-info{flex-basis:100%}
     .gcard-btn{flex:1 1 auto}
     .gcard-foot{width:100%}
+    .gstage-msg{margin-left:0}
+    .gquit{margin-left:0}
     .theme-btn{width:36px;height:36px;font-size:15px}
     .stats{grid-template-columns:repeat(2,1fr)}
   }
@@ -879,6 +890,7 @@
           <span>得分 <b id="gameScore">0</b></span>
           <span>最好 <b id="gameBest">0</b></span>
           <span class="gstage-msg" id="gameMsg"></span>
+          <button class="gquit" id="gameQuit" type="button" hidden>结束游戏</button>
         </p>
       </div>
 
@@ -1519,6 +1531,7 @@
     var bestEl = document.getElementById('gameBest');
     var msgEl = document.getElementById('gameMsg');
     var fbEl = document.getElementById('gameFallback');
+    var quitBtn = document.getElementById('gameQuit');
     if (!cvs || !btn || !wrap) return;
 
     if (!cvs.getContext){
@@ -1615,21 +1628,25 @@
       bullets.push({ x:player.x + player.r + 2, y:player.y, vx:560 });
     }
 
+    /* win = true 通关；false = 撞毁；'quit' = 自己按了「结束游戏」 */
     function endGame(win){
       state = 'over';
-      if (win){
+      if (win === 'quit'){
+        setMsg('结束啦 —— 点「再来一次」重开');
+      } else if (win){
         score += Math.round(timeLeft) * 12;   /* 剩得越多奖励越高 */
         setMsg('通关！点「再来一次」挑战更高分');
       } else {
         setMsg('撞毁了 —— 点「再来一次」');
       }
-      if (scoreEl) scoreEl.textContent = score;
+      if (scoreEl) scoreEl.textContent = Math.round(score);
       if (score > best){
-        best = score;
+        best = Math.round(score);
         if (bestEl) bestEl.textContent = best;
         try{ localStorage.setItem('caolinhao-game-best', String(best)); }catch(e){}
       }
       if (btn){ btn.disabled = false; btn.textContent = '再来一次'; }
+      if (quitBtn) quitBtn.hidden = true;      /* 结束了就不再显示「结束游戏」 */
       suppressPointerFx(false);   /* 打完了，鼠标特效恢复 */
     }
 
@@ -1837,6 +1854,7 @@
       state = 'playing';
       suppressPointerFx(true);
       if (btn){ btn.disabled = true; btn.textContent = '游戏中…'; }
+      if (quitBtn) quitBtn.hidden = false;    /* 进行中才给出「结束游戏」 */
       setMsg('躲开陨石，鼠标或 WASD 移动，点一下 / 空格开火');
       stop();
       last = performance.now();
@@ -1847,6 +1865,14 @@
       wrap.hidden = false;
       start();
     });
+
+    /* 结束游戏：立刻判定为已结束、结算本次得分，并把按钮恢复成「再来一次」 */
+    if (quitBtn){
+      quitBtn.addEventListener('click', function(){
+        if (state !== 'playing') return;
+        endGame('quit');
+      });
+    }
 
     /* 指针移动控制飞船；点一下开火 */
     cvs.addEventListener('pointermove', function(e){
