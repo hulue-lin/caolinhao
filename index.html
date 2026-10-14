@@ -1578,6 +1578,7 @@
        桌面浏览器把窗口拖窄时不会误判成手机。 */
     var coarse = !!(window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
     var FIRE_GAP = .16;                   /* 按住开火键时的连发间隔（秒） */
+    var FINGER_LIFT = 62;                 /* 触屏上飞船比手指高这么多逻辑像素，避免被手挡住 */
     var fireHeld = false, fireCd = 0;
 
     var player, enemies, bullets, stars;
@@ -1628,7 +1629,7 @@
     }
 
     function reset(){
-      player = { x:120, y:H / 2, r:11, tx:120, ty:H / 2 };
+      player = { x:120, y:H / 2, r:11, tx:120, ty:H / 2, pointerX:null, pointerY:null };
       enemies = [];
       bullets = [];
       stars = [];
@@ -1783,6 +1784,35 @@
       }
       ctx.globalAlpha = 1;
 
+      /* 触屏时的引导线：手指与飞船之间连一条细线，让人知道自己在控制哪里 */
+      if (coarse && player && player.pointerX !== null && player.pointerX !== undefined){
+        var lx = player.pointerX, ly = player.pointerY;
+        var lg;
+        try{
+          lg = ctx.createLinearGradient(lx, ly, player.x, player.y);
+          lg.addColorStop(0, 'rgba(255,255,255,0)');
+          lg.addColorStop(1, chroma);
+        }catch(e){ lg = chroma; }
+        ctx.globalAlpha = .5;
+        ctx.strokeStyle = lg;
+        ctx.lineWidth = 1.6;
+        ctx.setLineDash([4, 5]);
+        ctx.beginPath();
+        ctx.moveTo(lx, ly);
+        ctx.lineTo(player.x, player.y);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        /* 手指位置画一个小圈，指出实际触点在哪儿 */
+        ctx.globalAlpha = .38;
+        ctx.strokeStyle = chroma;
+        ctx.lineWidth = 1.4;
+        ctx.beginPath();
+        ctx.arc(lx, ly, 13, 0, 6.29);
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+      }
+
       /* 飞船：一个朝右的三角 */
       if (player){
         ctx.save();
@@ -1935,20 +1965,38 @@
       });
     }
 
-    /* 指针移动控制飞船；点一下开火 */
-    cvs.addEventListener('pointermove', function(e){
+    /* 指针控制飞船。
+       触屏上手指会挡住飞船，所以让飞船浮在手指上方一段距离（FINGER_LIFT）：
+       手指在下、飞船在上，中间画一条细线保持方位感。
+       桌面端鼠标不遮挡，偏移为 0，行为不变。 */
+    function pointAt(e){
       if (state !== 'playing') return;
       var p = toGame(e);
-      player.tx = p.x; player.ty = p.y;
+      player.pointerX = p.x;
+      player.pointerY = p.y;
+      player.tx = p.x;
+      player.ty = p.y - (coarse ? FINGER_LIFT : 0);
+    }
+
+    cvs.addEventListener('pointermove', function(e){
+      pointAt(e);
     }, {passive:true});
 
     cvs.addEventListener('pointerdown', function(e){
-      if (state !== 'playing') return;
-      var p = toGame(e);
-      player.tx = p.x; player.ty = p.y;   /* 手指点下去就地定位，避免够不到 */
+      pointAt(e);
+      try{ cvs.setPointerCapture(e.pointerId); }catch(err){}
       /* 触屏设备用下面的开火键射击，点画面只负责移动，避免一个手势干两件事 */
       if (!coarse) fire();
     }, {passive:true});
+
+    /* 松手后不再记录手指位置，那条引导线也就跟着消失 */
+    var clearPointer = function(){
+      if (!player) return;
+      player.pointerX = player.pointerY = null;
+    };
+    cvs.addEventListener('pointerup', clearPointer, {passive:true});
+    cvs.addEventListener('pointercancel', clearPointer, {passive:true});
+    cvs.addEventListener('pointerleave', clearPointer, {passive:true});
 
     /* 键盘也能玩：WASD 或方向键移动，空格开火。
        WASD 要按 e.code（物理按键位置），这样在中文输入法或其他键盘布局下一样有效。 */
