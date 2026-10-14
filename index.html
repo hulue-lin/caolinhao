@@ -8,7 +8,9 @@
 <meta name="theme-color" content="#070b16">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='26' fill='%2338bdf8'/%3E%3Ctext x='50' y='70' font-size='58' text-anchor='middle' fill='%23071019' font-family='sans-serif' font-weight='bold'%3E曹%3C/text%3E%3C/svg%3E">
 <style>
-  /* ===== 设计变量：想换配色只改这里 ===== */
+  /* ===== 设计变量 =====
+     默认是深色，html[data-theme="light"] 里覆盖成浅色。
+     想换配色只改这两组变量的颜色值。 */
   :root{
     --bg:        #070b16;
     --bg-soft:   #0c1222;
@@ -23,6 +25,51 @@
     --accent-3:  #34d399;
     --radius:    18px;
     --maxw:      1100px;
+
+    /* 这两组只在各自主题下用，用来画背景光晕和特效颜色 */
+    --glow-1:    rgba(56,189,248,.55);
+    --glow-2:    rgba(167,139,250,.45);
+    --glow-3:    rgba(52,211,153,.28);
+    --nav-bg:    rgba(7,11,22,.62);
+    --nav-bg-2:  rgba(7,11,22,.90);
+    --fx-color:  #38bdf8;
+    --chip-bg:   rgba(10,17,32,.86);
+    --inset-bg:  rgba(7,11,22,.55);
+    --glow-a:    rgba(56,189,248,.55);
+    --glow-b:    rgba(56,189,248,.28);
+    --glow-c:    rgba(56,189,248,.14);
+    --tint-1:    rgba(56,189,248,.18);
+    --tint-2:    rgba(167,139,250,.18);
+    --link-line: rgba(56,189,248,.40);
+    --violet-line: rgba(167,139,250,.42);
+  }
+  html[data-theme="light"]{
+    --bg:        #f4f6fc;
+    --bg-soft:   #ffffff;
+    --panel:     #ffffff;
+    --panel-2:   #eef1f9;
+    --line:      rgba(16,24,64,.10);
+    --line-2:    rgba(16,24,64,.18);
+    --text:      #131a33;
+    --muted:     #5a6785;
+    --accent:    #0f766e;
+    --accent-2:  #6d4aef;
+    --accent-3:  #059669;
+    --glow-1:    rgba(15,118,110,.16);
+    --glow-2:    rgba(109,74,239,.14);
+    --glow-3:    rgba(5,150,105,.10);
+    --nav-bg:    rgba(244,246,252,.72);
+    --nav-bg-2:  rgba(244,246,252,.95);
+    --fx-color:  #0f766e;
+    --chip-bg:   rgba(255,255,255,.92);
+    --inset-bg:  #ffffff;
+    --glow-a:    rgba(15,118,110,.32);
+    --glow-b:    rgba(15,118,110,.18);
+    --glow-c:    rgba(15,118,110,.10);
+    --tint-1:    rgba(15,118,110,.10);
+    --tint-2:    rgba(109,74,239,.09);
+    --link-line: rgba(15,118,110,.55);
+    --violet-line: rgba(109,74,239,.50);
   }
 
   *{box-sizing:border-box}
@@ -53,19 +100,48 @@
     position:absolute;border-radius:50%;filter:blur(90px);opacity:.5;
     animation:float 16s ease-in-out infinite;
   }
-  .bg .g1{width:52vw;height:52vw;left:-14vw;top:-16vw;background:radial-gradient(circle,rgba(56,189,248,.55),transparent 68%)}
-  .bg .g2{width:46vw;height:46vw;right:-12vw;top:2vw;background:radial-gradient(circle,rgba(167,139,250,.45),transparent 68%);animation-delay:-5s}
-  .bg .g3{width:40vw;height:40vw;left:32vw;top:46vh;background:radial-gradient(circle,rgba(52,211,153,.28),transparent 70%);animation-delay:-9s}
+  .bg .g1{width:52vw;height:52vw;left:-14vw;top:-16vw;background:radial-gradient(circle,var(--glow-1),transparent 68%)}
+  .bg .g2{width:46vw;height:46vw;right:-12vw;top:2vw;background:radial-gradient(circle,var(--glow-2),transparent 68%);animation-delay:-5s}
+  .bg .g3{width:40vw;height:40vw;left:32vw;top:46vh;background:radial-gradient(circle,var(--glow-3),transparent 70%);animation-delay:-9s}
   @keyframes float{
     0%,100%{transform:translate3d(0,0,0) scale(1)}
     50%{transform:translate3d(2vw,-3vh,0) scale(1.08)}
   }
   .bg .scan{
     position:absolute;left:0;right:0;height:1px;
-    background:linear-gradient(90deg,transparent,rgba(56,189,248,.55),transparent);
+    background:linear-gradient(90deg,transparent,var(--glow-a),transparent);
     animation:scan 7s linear infinite;opacity:.7;
   }
+  html[data-theme="light"] .bg .scan{
+    background:linear-gradient(90deg,transparent,rgba(15,118,110,.35),transparent);
+    opacity:.5;
+  }
   @keyframes scan{0%{top:-5%}100%{top:105%}}
+
+  /* ===== 滚动进度条（页面顶部一条细线）===== */
+  .scrollbar{
+    position:fixed;top:0;left:0;height:3px;width:0;
+    background:linear-gradient(90deg,var(--accent),var(--accent-2));
+    box-shadow:0 0 12px var(--glow-b);
+    z-index:70;pointer-events:none;
+    transition:width .1s linear;
+  }
+
+  /* ===== 键盘可达性 =====
+     用 :focus-visible，所以鼠标点击不会出现难看的焦点框，只有 Tab 键导航时才显示 */
+  a:focus-visible,button:focus-visible,[tabindex]:focus-visible{
+    outline:2px solid var(--accent);
+    outline-offset:3px;
+    border-radius:8px;
+  }
+  /* 跳到主内容：平时藏起来，按 Tab 第一个聚焦到它 */
+  .skip-link{
+    position:absolute;left:50%;top:-60px;transform:translateX(-50%);
+    z-index:80;padding:10px 20px;border-radius:0 0 12px 12px;
+    background:var(--accent);color:#04121c;font-weight:600;font-size:14px;
+    transition:top .2s;
+  }
+  .skip-link:focus{top:0}
 
   /* ===== 布局 ===== */
   .wrap{width:min(var(--maxw),92vw);margin:0 auto;position:relative;z-index:1}
@@ -86,17 +162,17 @@
   header.nav{
     position:sticky;top:0;z-index:50;
     backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
-    background:rgba(7,11,22,.62);
+    background:var(--nav-bg);
     border-bottom:1px solid transparent;
     transition:border-color .3s,background .3s;
   }
-  header.nav.stuck{border-bottom-color:var(--line);background:rgba(7,11,22,.86)}
+  header.nav.stuck{border-bottom-color:var(--line);background:var(--nav-bg-2)}
   .nav-inner{display:flex;align-items:center;justify-content:space-between;height:64px}
   .logo{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.02em}
   .logo .dot{
     width:10px;height:10px;border-radius:50%;
     background:linear-gradient(135deg,var(--accent),var(--accent-2));
-    box-shadow:0 0 16px rgba(56,189,248,.9);
+    box-shadow:0 0 16px var(--glow-a);
   }
   .nav-links{display:flex;gap:4px;align-items:center}
   .nav-links a{
@@ -107,10 +183,19 @@
   .nav-cta{
     padding:9px 18px;border-radius:999px;font-size:14.5px;font-weight:600;
     color:#05121c;background:linear-gradient(135deg,var(--accent),#7dd3fc);
-    box-shadow:0 8px 24px rgba(56,189,248,.28);
+    box-shadow:0 8px 24px var(--glow-c);
     transition:transform .2s,box-shadow .2s;white-space:nowrap;
   }
-  .nav-cta:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(56,189,248,.42)}
+  .nav-cta:hover{transform:translateY(-2px);box-shadow:0 12px 30px var(--glow-b)}
+  /* 右上角主题切换按钮 */
+  .theme-btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:7px;
+    width:38px;height:38px;flex:0 0 auto;
+    border-radius:50%;cursor:pointer;font-size:16px;line-height:1;
+    background:var(--panel);border:1px solid var(--line-2);color:var(--text);
+    transition:transform .2s,border-color .2s,background .2s;
+  }
+  .theme-btn:hover{transform:translateY(-2px);border-color:var(--accent);background:var(--panel-2)}
   .burger{display:none;background:none;border:1px solid var(--line-2);color:var(--text);
     width:40px;height:38px;border-radius:10px;font-size:18px;cursor:pointer}
 
@@ -142,6 +227,20 @@
   .role .sep{color:var(--accent);margin:0 10px;font-weight:400}
   .hero p.bio{color:var(--muted);margin:18px 0 0;max-width:56ch;font-size:16.5px}
   .typed{color:var(--accent);font-weight:700}
+  /* 关键词轮播：可以点一下换下一个，也可以自动轮播 */
+  .typed-wrap{
+    display:inline-flex;align-items:center;gap:8px;cursor:pointer;
+    padding:2px 8px;margin:-2px -8px;border-radius:8px;
+    transition:background .2s;
+  }
+  .typed-wrap:hover{background:var(--panel-2)}
+  .typed-wrap.paused .caret{animation:none;opacity:.35}
+  .typed-dots{display:inline-flex;gap:5px;margin-left:2px}
+  .typed-dots i{
+    width:6px;height:6px;border-radius:50%;display:block;
+    background:var(--line-2);transition:background .25s,transform .25s;
+  }
+  .typed-dots i.on{background:var(--accent);transform:scale(1.25)}
   .caret{display:inline-block;width:9px;height:1.05em;background:var(--accent);
     vertical-align:-.16em;margin-left:3px;animation:blink 1s steps(2) infinite}
   @keyframes blink{50%{opacity:0}}
@@ -157,9 +256,9 @@
   .btn.primary{
     color:#05121c;border-color:transparent;
     background:linear-gradient(135deg,var(--accent),#7dd3fc);
-    box-shadow:0 10px 30px rgba(56,189,248,.3);
+    box-shadow:0 10px 30px var(--glow-c);
   }
-  .btn.primary:hover{box-shadow:0 14px 36px rgba(56,189,248,.45)}
+  .btn.primary:hover{box-shadow:0 14px 36px var(--glow-b)}
 
   .socials{display:flex;gap:12px;margin-top:28px}
   .socials a{
@@ -169,7 +268,7 @@
   }
   .socials a:hover{color:var(--accent);border-color:var(--accent);transform:translateY(-3px)}
 
-  /* ===== 头像 ===== */
+  /* 头像 */
   .avatar-wrap{position:relative;justify-self:center}
   .avatar-ring{
     width:clamp(200px,26vw,280px);aspect-ratio:1;border-radius:50%;
@@ -179,7 +278,7 @@
   @keyframes spin{to{transform:rotate(360deg)}}
   .avatar{
     width:100%;height:100%;border-radius:50%;overflow:hidden;
-    background:linear-gradient(160deg,#111a30,#0a1120);
+    background:var(--bg-soft);
     display:grid;place-items:center;
     position:relative;
   }
@@ -197,7 +296,7 @@
   .avatar img{width:100%;height:100%;object-fit:cover;animation:spin 9s linear infinite reverse}
   .chip-float{
     position:absolute;padding:8px 14px;border-radius:999px;font-size:13px;font-weight:600;
-    background:rgba(10,17,32,.86);border:1px solid var(--line-2);
+    background:var(--chip-bg);border:1px solid var(--line-2);
     backdrop-filter:blur(8px);white-space:nowrap;
     animation:bob 5s ease-in-out infinite;
   }
@@ -208,7 +307,7 @@
 
   /* ===== 数据条 ===== */
   .stats{
-    display:grid;grid-template-columns:repeat(2,1fr);gap:1px;
+    display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
     background:var(--line);border:1px solid var(--line);
     border-radius:var(--radius);overflow:hidden;margin-top:64px;
   }
@@ -234,7 +333,7 @@
   .fact:hover{border-color:var(--line-2);transform:translateX(4px)}
   .fact .ic{
     flex:0 0 34px;height:34px;border-radius:10px;display:grid;place-items:center;
-    background:linear-gradient(135deg,rgba(56,189,248,.18),rgba(167,139,250,.18));
+    background:linear-gradient(135deg,var(--tint-1),var(--tint-2));
     color:var(--accent);font-size:16px;
   }
   .fact b{display:block;font-size:14.5px}
@@ -251,12 +350,12 @@
   .hobby{
     display:flex;align-items:flex-start;gap:22px;margin-top:38px;
     padding:clamp(22px,3vw,34px);border-radius:var(--radius);
-    background:linear-gradient(135deg,rgba(56,189,248,.10),rgba(167,139,250,.07) 60%,transparent);
+    background:linear-gradient(135deg,var(--tint-1),var(--tint-2) 60%,transparent);
     border:1px solid var(--line);
   }
   .hobby-ic{
     flex:0 0 52px;height:52px;border-radius:14px;display:grid;place-items:center;font-size:23px;
-    background:linear-gradient(135deg,rgba(56,189,248,.18),rgba(167,139,250,.18));
+    background:linear-gradient(135deg,var(--tint-1),var(--tint-2));
     border:1px solid var(--line-2);
   }
   .hobby-lead{margin:0 0 20px;color:var(--muted);font-size:15px}
@@ -274,19 +373,19 @@
     display:inline-flex;align-items:center;gap:9px;
     padding:12px 22px;border-radius:12px;
     font-size:15.5px;font-weight:600;color:var(--accent);
-    background:var(--panel);border:1px solid rgba(56,189,248,.4);
+    background:var(--panel);border:1px solid var(--link-line);
     transition:transform .2s,border-color .2s,color .2s,box-shadow .2s,background .2s;
   }
   .hobby-link > span{font-size:13px;opacity:.75}
   .hobby-link:hover{
     color:var(--text);border-color:var(--accent);background:var(--panel-2);
-    transform:translateY(-2px);box-shadow:0 10px 26px rgba(56,189,248,.22);
+    transform:translateY(-2px);box-shadow:0 10px 26px var(--glow-c);
   }
   /* 看书这一项：点左边的 📖 十日终焉 去番茄小说，用紫色和游戏的蓝色区分 */
-  .hobby-link.book{color:var(--accent-2);border-color:rgba(167,139,250,.42);gap:8px}
+  .hobby-link.book{color:var(--accent-2);border-color:var(--violet-line);gap:8px}
   .hobby-link.book:hover{
     color:var(--text);border-color:var(--accent-2);background:var(--panel-2);
-    box-shadow:0 10px 26px rgba(167,139,250,.24);
+    box-shadow:0 10px 26px var(--glow-c);
   }
   .lk-ic{font-size:16px}
 
@@ -322,7 +421,7 @@
   .tl-item::before{
     content:"";position:absolute;left:-30px;top:7px;width:11px;height:11px;border-radius:50%;
     background:var(--bg);border:2px solid var(--accent);
-    box-shadow:0 0 0 4px rgba(56,189,248,.14);
+    box-shadow:0 0 0 4px var(--glow-c);
   }
   .tl-item time{font-size:13px;color:var(--accent);font-weight:600;letter-spacing:.04em}
   .tl-item h3{margin:5px 0 4px;font-size:17.5px}
@@ -341,7 +440,7 @@
   .contact-line{
     display:inline-flex;align-items:center;gap:10px;
     padding:12px 20px;border-radius:12px;font-size:14.5px;
-    background:rgba(7,11,22,.55);border:1px solid var(--line-2);
+    background:var(--inset-bg);border:1px solid var(--line-2);
     transition:all .2s;
   }
   .contact-line:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px)}
@@ -363,6 +462,25 @@
   }
   footer .up{color:var(--accent)}
 
+  /* ===== 留言板（Giscus，基于 GitHub Discussions）===== */
+  .guest-note{
+    margin:22px 0 0;padding:14px 18px;border-radius:12px;
+    background:var(--panel);border:1px dashed var(--line-2);
+    color:var(--muted);font-size:13.5px;line-height:1.8;
+  }
+  .guest-note code{
+    padding:1px 6px;border-radius:5px;background:var(--panel-2);
+    border:1px solid var(--line);font-size:12.5px;
+  }
+  .giscus-wrap{
+    margin-top:26px;min-height:180px;
+    padding:clamp(16px,2.4vw,26px);border-radius:var(--radius);
+    background:var(--panel);border:1px solid var(--line);
+  }
+  .giscus-wrap .giscus{min-height:120px}
+  /* 浅色主题下让 Giscus 跟随（Giscus 自己按主题传参，这里兜底配色） */
+  html[data-theme="light"] .giscus-wrap{background:#fff}
+
   /* ===== 滚动进场动画 ===== */
   .reveal{opacity:0;transform:translateY(26px);transition:opacity .75s ease,transform .75s cubic-bezier(.22,1,.36,1)}
   .reveal.in{opacity:1;transform:none}
@@ -375,7 +493,7 @@
   @media (max-width:680px){
     .nav-links{
       position:absolute;top:64px;left:0;right:0;flex-direction:column;
-      background:rgba(7,11,22,.97);border-bottom:1px solid var(--line);
+      background:var(--nav-bg-2);border-bottom:1px solid var(--line);
       padding:14px;gap:6px;display:none;
     }
     .nav-links.open{display:flex}
@@ -391,14 +509,67 @@
     .hobby-link{flex:1 1 auto;justify-content:center}
     .game-info{flex-basis:100%}
     .mini-btn{flex:1 1 auto;justify-content:center}
+    .theme-btn{width:36px;height:36px;font-size:15px}
+    .stats{grid-template-columns:repeat(2,1fr)}
   }
   @media (prefers-reduced-motion:reduce){
     *{animation:none!important;transition-duration:.01ms!important}
     .reveal{opacity:1;transform:none}
   }
+
+  /* ===== 手机 / 省电优化 =====
+     三块 blur(90px) 的光晕在大屏上好看，但在手机上非常吃 GPU
+     （每帧都要重算大面积高斯模糊），和 canvas 特效叠在一起容易掉帧。
+     这里在窄屏把光晕动画停掉、模糊半径减半，并去掉导航的毛玻璃。 */
+  @media (max-width:768px){
+    .bg .glow{
+      animation:none;          /* 停掉 16s 的位移动画，省掉每帧重绘 */
+      filter:blur(46px);       /* 模糊半径减半 */
+      opacity:.34;
+      will-change:auto;
+    }
+    .bg .scan{display:none}    /* 扫描线收益很低，窄屏直接不画 */
+    header.nav{
+      backdrop-filter:none;-webkit-backdrop-filter:none;
+      background:var(--nav-bg-2);   /* 去掉毛玻璃后用实色，避免半透明看不清 */
+    }
+  }
+  /* 更窄的屏：光晕干脆只留一个，进一步减负 */
+  @media (max-width:480px){
+    .bg .glow{opacity:.26;filter:blur(38px)}
+    .bg .g3{display:none}
+  }
+
+  /* ===== 鼠标轨迹 / 点击特效 ===== */
+  /* 固定铺满视口，盖在所有内容之上，但不接收鼠标事件（所以按钮照常能点） */
+  #fx{
+    position:fixed;inset:0;width:100%;height:100%;
+    pointer-events:none;z-index:60;
+  }
 </style>
+<!-- 提前定好主题，避免浅色用户看到一瞬深色闪烁。
+     放在这里（body 之前）执行，比等主脚本跑要早。 -->
+<script>
+(function(){
+  try{
+    var saved = localStorage.getItem('caolinhao-theme');
+    if (!saved){
+      saved = (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) ? 'light' : 'dark';
+    }
+    document.documentElement.setAttribute('data-theme', saved);
+  }catch(e){
+    document.documentElement.setAttribute('data-theme', 'dark');
+  }
+})();
+</script>
 </head>
 <body>
+
+<!-- 顶部滚动进度条 -->
+<div class="scrollbar" id="scrollbar" aria-hidden="true"></div>
+
+<!-- 键盘用户按 Tab 第一个聚焦到这里，可以跳过导航直达正文 -->
+<a class="skip-link" href="#top">跳到主要内容</a>
 
 <!-- 背景层 -->
 <div class="bg" aria-hidden="true">
@@ -408,6 +579,9 @@
   <div class="glow g3"></div>
   <div class="scan"></div>
 </div>
+
+<!-- 鼠标轨迹 / 点击特效的绘制层：pointer-events 为 none，不挡任何交互 -->
+<canvas id="fx" aria-hidden="true"></canvas>
 
 <!-- 导航 -->
 <header class="nav" id="nav">
@@ -419,9 +593,11 @@
       <a href="#minigame">小游戏</a>
       <a href="#skills">学习</a>
       <a href="#experience">经历</a>
+      <a href="#guestbook">留言</a>
       <a href="#contact">联系</a>
     </nav>
     <a class="nav-cta" href="#contact">联系我</a>
+    <button class="theme-btn" id="themeBtn" type="button" aria-label="切换深色 / 浅色主题" title="切换深色 / 浅色主题">🌙</button>
     <button class="burger" id="burger" aria-label="菜单">☰</button>
   </div>
 </header>
@@ -438,7 +614,10 @@
           <p class="role">
             装备工程学院 · 信息对抗技术
             <span class="sep">/</span>
-            <span class="typed" id="typed"></span><span class="caret"></span>
+            <span class="typed-wrap" id="typedWrap" role="button" tabindex="0" aria-label="切换下面的关键词">
+              <span class="typed" id="typed"></span><span class="caret"></span>
+              <span class="typed-dots" id="typedDots" aria-hidden="true"></span>
+            </span>
           </p>
           <p class="bio">
             我是装备工程学院信息对抗技术专业的大一学生，目前把主要精力放在 <strong>C 语言</strong> 和
@@ -481,6 +660,8 @@
       <div class="stats reveal">
         <div class="stat"><b><span class="count" data-to="1">0</span></b><small>在读年级（大一）</small></div>
         <div class="stat"><b><span class="count" data-to="2">0</span></b><small>正在主攻的课程</small></div>
+        <div class="stat"><b><span class="count" data-to="1">0</span></b><small>在玩的游戏</small></div>
+        <div class="stat"><b><span class="count" data-to="2026">0</span></b><small>本站建立于</small></div>
       </div>
     </div>
   </section>
@@ -605,6 +786,24 @@
     </div>
   </section>
 
+  <!-- ===== 留言板 ===== -->
+  <section id="guestbook">
+    <div class="wrap">
+      <p class="eyebrow reveal">Guestbook</p>
+      <h2 class="title reveal">留言板</h2>
+      <p class="lead reveal">路过就留句话吧 —— 用 GitHub 账号登录即可，不需要注册别的东西。</p>
+
+      <div class="reveal">
+        <p class="guest-note" id="guestNote">
+          留言板基于 GitHub Discussions，需要先在仓库里开启 Discussions，
+          并把仓库名和分类 ID 填到代码里的 <code>GISCUS</code> 配置中，这里才会显示。
+          具体步骤见 README。
+        </p>
+        <div class="giscus-wrap" id="giscusWrap"></div>
+      </div>
+    </div>
+  </section>
+
   <!-- ===== 联系 ===== -->
   <section id="contact">
     <div class="wrap">
@@ -637,18 +836,31 @@
 (function(){
   "use strict";
 
-  /* 1. 导航：滚动加边框 + 当前区块高亮 */
+  /* 1. 导航：滚动加边框 + 当前区块高亮 + 顶部滚动进度条 */
   var nav = document.getElementById('nav');
+  var bar = document.getElementById('scrollbar');
   var links = Array.prototype.slice.call(document.querySelectorAll('.nav-links a'));
   var sections = links.map(function(a){ return document.querySelector(a.getAttribute('href')); });
 
   function onScroll(){
     nav.classList.toggle('stuck', window.scrollY > 8);
+
+    /* 滚动进度：0 → 100% */
+    if (bar){
+      var doc = document.documentElement;
+      var max = doc.scrollHeight - window.innerHeight;
+      var p = max > 0 ? window.scrollY / max : 0;
+      if (p < 0) p = 0;
+      if (p > 1) p = 1;
+      bar.style.width = (p * 100) + '%';
+    }
+
     var pos = window.scrollY + 140, current = -1;
     sections.forEach(function(s, i){ if (s && s.offsetTop <= pos) current = i; });
     links.forEach(function(a, i){ a.classList.toggle('active', i === current); });
   }
   window.addEventListener('scroll', onScroll, {passive:true});
+  window.addEventListener('resize', onScroll);
   onScroll();
 
   /* 2. 移动端菜单 */
@@ -659,20 +871,81 @@
     if (e.target.tagName === 'A') navLinks.classList.remove('open');
   });
 
-  /* 3. 打字机效果：改成你自己的关键词 */
+  /* 3. 打字机效果 + 可点击轮播
+     自动循环；点一下（或按回车/空格）立刻切到下一个；
+     切到下一个后暂停 6 秒再恢复自动播放；页面切到后台时完全停下，不空转。 */
   var words = ['正在学 C 语言', '正在啃高等数学', '信息对抗技术专业'];
   var typed = document.getElementById('typed');
-  var wi = 0, ci = 0, deleting = false;
+  var typedWrap = document.getElementById('typedWrap');
+  var typedDots = document.getElementById('typedDots');
+  var wi = 0, ci = 0, deleting = false, timer = null, paused = false;
+
+  /* 右下角小圆点，指示现在是第几个关键词 */
+  if (typedDots){
+    words.forEach(function(_, i){
+      var d = document.createElement('i');
+      if (i === 0) d.className = 'on';
+      typedDots.appendChild(d);
+    });
+  }
+  function markDot(){
+    if (!typedDots) return;
+    Array.prototype.forEach.call(typedDots.children, function(d, i){
+      d.className = (i === wi) ? 'on' : '';
+    });
+  }
+
+  function stopTyping(){
+    if (timer){ clearTimeout(timer); timer = null; }
+  }
   function tick(){
+    stopTyping();
+    if (document.hidden) return;          /* 页面在后台就不跑 */
     var w = words[wi];
     ci += deleting ? -1 : 1;
     typed.textContent = w.slice(0, ci);
     var delay = deleting ? 55 : 115;
-    if (!deleting && ci === w.length){ deleting = true; delay = 1500; }
-    else if (deleting && ci === 0){ deleting = false; wi = (wi + 1) % words.length; delay = 350; }
-    setTimeout(tick, delay);
+    if (!deleting && ci === w.length){
+      deleting = true; delay = 1500;
+      if (paused){ paused = false; typedWrap.classList.remove('paused'); }
+    } else if (deleting && ci === 0){
+      deleting = false; wi = (wi + 1) % words.length; delay = 350;
+      markDot();
+    }
+    timer = setTimeout(tick, delay);
   }
-  if (words.length) tick();
+
+  /* 点一下 / 敲回车 → 直接跳到下一个关键词 */
+  function nextWord(){
+    stopTyping();
+    deleting = false;
+    wi = (wi + 1) % words.length;
+    ci = words[wi].length;
+    typed.textContent = words[wi];
+    markDot();
+    paused = true;
+    typedWrap.classList.add('paused');    /* 光标停闪，表示已暂停自动播放 */
+    timer = setTimeout(function(){
+      paused = false;
+      typedWrap.classList.remove('paused');
+      deleting = true;
+      tick();
+    }, 6000);
+  }
+
+  if (words.length && typed && typedWrap){
+    markDot();
+    tick();
+    typedWrap.addEventListener('click', nextWord);
+    typedWrap.addEventListener('keydown', function(e){
+      if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); nextWord(); }
+    });
+    /* 切到后台停掉定时器，回到前台再继续 */
+    document.addEventListener('visibilitychange', function(){
+      if (document.hidden){ stopTyping(); }
+      else if (!timer){ tick(); }
+    });
+  }
 
   /* 4. 滚动进场 + 数字滚动（只触发一次） */
   var counted = new WeakSet();
@@ -680,10 +953,12 @@
   function animateCount(el){
     var to = parseFloat(el.dataset.to) || 0;
     var start = performance.now(), dur = 1400;
+    /* 数值很大时（比如年份 2026）从 0 数上去既慢又没意义，改成从 85% 处开始 */
+    var from = to > 100 ? to * .85 : 0;
     (function step(now){
       var p = Math.min((now - start) / dur, 1);
       var eased = 1 - Math.pow(1 - p, 3);
-      el.textContent = Math.round(to * eased);
+      el.textContent = Math.round(from + (to - from) * eased);
       if (p < 1) requestAnimationFrame(step);
     })(start);
   }
@@ -706,6 +981,286 @@
 
   /* 5. 年份 */
   document.getElementById('year').textContent = new Date().getFullYear();
+
+  /* ===== 6. 主题切换（深色 / 浅色）=====
+     优先级：localStorage 里记住的选择 > 系统偏好 > 默认深色。
+     切换时改 html 的 data-theme，CSS 变量整体跟着换。 */
+  var themeBtn = document.getElementById('themeBtn');
+  var THEME_KEY = 'caolinhao-theme';
+
+  function currentTheme(){
+    return document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+  }
+  function applyTheme(t){
+    document.documentElement.setAttribute('data-theme', t);
+    if (themeBtn){
+      themeBtn.textContent = (t === 'light') ? '☀️' : '🌙';
+      themeBtn.setAttribute('aria-label', (t === 'light') ? '切换到深色主题' : '切换到浅色主题');
+    }
+    /* 通知其他模块（比如 canvas 特效）换色 */
+    try{ document.dispatchEvent(new CustomEvent('themechange', { detail:{ theme:t } })); }catch(e){}
+  }
+  /* 初始化：页面刚加载时不要有过渡动画，避免闪一下 */
+  (function initTheme(){
+    var saved = null;
+    try{ saved = localStorage.getItem(THEME_KEY); }catch(e){}
+    var prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+    applyTheme(saved || (prefersLight ? 'light' : 'dark'));
+  })();
+  if (themeBtn){
+    themeBtn.addEventListener('click', function(){
+      var next = currentTheme() === 'light' ? 'dark' : 'light';
+      applyTheme(next);
+      try{ localStorage.setItem(THEME_KEY, next); }catch(e){}
+    });
+  }
+
+  /* ===== 7. 留言板（Giscus）=====
+     用 GitHub Discussions 当留言后端，不需要自己写服务器。
+     使用前需要三步（详见 README）：
+       1) 仓库 Settings → General → Features 勾上 Discussions
+       2) Discussions 里新建一个分类（比如「留言板」），Announcements 类型
+       3) 在 https://giscus.app 输入仓库名，拿到 repoId 和 categoryId，填到下面
+     两项都是空的时候，页面上只显示提示文字，不会去请求外部脚本。 */
+  var GISCUS = {
+    repo: 'hulue-lin/caolinhao',      /* 仓库，格式 用户名/仓库名 */
+    repoId: '',                        /* 从 giscus.app 复制，形如 R_kgDOxxxxxxx */
+    category: '留言板',                 /* Discussions 里的分类名 */
+    categoryId: ''                     /* 从 giscus.app 复制，形如 DIC_kwDOxxxxxxx */
+  };
+
+  (function initGiscus(){
+    var host = document.getElementById('giscusWrap');
+    var note = document.getElementById('guestNote');
+    if (!host) return;
+
+    if (!GISCUS.repoId || !GISCUS.categoryId){
+      return;   /* 还没配置，保留页面上的提示文字 */
+    }
+    if (note) note.style.display = 'none';
+
+    function mount(){
+      var s = document.createElement('script');
+      s.src = 'https://giscus.app/client.js';
+      s.async = true;
+      s.crossOrigin = 'anonymous';
+      s.setAttribute('data-repo', GISCUS.repo);
+      s.setAttribute('data-repo-id', GISCUS.repoId);
+      s.setAttribute('data-category', GISCUS.category);
+      s.setAttribute('data-category-id', GISCUS.categoryId);
+      s.setAttribute('data-mapping', 'pathname');
+      s.setAttribute('data-strict', '0');
+      s.setAttribute('data-reactions-enabled', '1');
+      s.setAttribute('data-emit-metadata', '0');
+      s.setAttribute('data-input-position', 'top');
+      s.setAttribute('data-lang', 'zh-CN');
+      s.setAttribute('data-loading', 'lazy');
+      host.appendChild(s);
+    }
+
+    /* 滚到留言板附近再加载，首屏不为它付代价 */
+    if ('IntersectionObserver' in window){
+      var gio = new IntersectionObserver(function(entries){
+        entries.forEach(function(en){
+          if (!en.isIntersecting) return;
+          gio.unobserve(en.target);
+          mount();
+        });
+      }, {rootMargin:'320px 0px'});
+      gio.observe(host);
+    } else {
+      mount();
+    }
+  })();
+
+  /* ===== 8. 鼠标轨迹 + 点击特效 =====
+     用 canvas 手写，不引外部库：
+       轨迹 —— 顺着指针走的一条线，从亮到透明渐隐，线头略粗、线尾收细；
+       点击 —— 以点击处为中心向外扩散的圆环（三层错开出现）。
+     没东西可画时自动停止 requestAnimationFrame，不空转。
+     触屏设备滑动 / 点按同样有效。 */
+  (function(){
+    var cvs = document.getElementById('fx');
+    if (!cvs || !cvs.getContext) return;
+
+    /* 系统开了「减弱动态效果」就整套不加载 */
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    var ctx = cvs.getContext('2d');
+    var DPR = Math.min(window.devicePixelRatio || 1, 2);
+    var W = 0, H = 0;
+
+    var TRAIL_MAX = 26;      /* 轨迹最多记这么多个取样点 */
+    var RING_COLOR = '#38bdf8';
+    var GLOW_COLOR = 'rgba(56,189,248,.9)';
+    var DOT_COLOR  = '#e8eefc';
+    var C1 = '#38bdf8', C2 = '#a78bfa', C3 = '#34d399';   /* 三层圆环的颜色，随主题变 */
+
+    var pts = [];            /* 轨迹取样点：{x, y}，越靠前越新 */
+    var rings = [];          /* 正在扩散的圆环 */
+    var pluses = [];         /* 点击中心的十字光点 */
+    var running = false;
+    var lastX = null, lastY = null;
+    var mouseX = null, mouseY = null;
+    var lastT = 0;
+
+    function resize(){
+      W = window.innerWidth;
+      H = window.innerHeight;
+      cvs.width  = Math.round(W * DPR);
+      cvs.height = Math.round(H * DPR);
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    /* 特效颜色跟着主题走：从 CSS 变量里读当前主题的强调色 */
+    function withAlpha(hex, a){
+      var h = String(hex || '').trim().replace('#', '');
+      if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+      if (!/^[0-9a-fA-F]{6}$/.test(h)) return 'rgba(56,189,248,' + a + ')';
+      return 'rgba(' + parseInt(h.slice(0, 2), 16) + ',' +
+                       parseInt(h.slice(2, 4), 16) + ',' +
+                       parseInt(h.slice(4, 6), 16) + ',' + a + ')';
+    }
+    function colors(){
+      var cs = getComputedStyle(document.documentElement);
+      var v = function(n, fb){ var x = (cs.getPropertyValue(n) || '').trim(); return x || fb; };
+      C1 = v('--accent',   '#38bdf8');
+      C2 = v('--accent-2', '#a78bfa');
+      C3 = v('--accent-3', '#34d399');
+      RING_COLOR = C1;
+      GLOW_COLOR = withAlpha(C1, .9);
+      DOT_COLOR  = (document.documentElement.getAttribute('data-theme') === 'light') ? '#0b1220' : '#e8eefc';
+    }
+    colors();
+    document.addEventListener('themechange', colors);
+
+    function frame(now){
+      /* 按真实帧间隔缩放，120Hz 屏和 60Hz 屏上速度一致（1 = 60fps 一帧） */
+      if (!now) now = (window.performance && performance.now) ? performance.now() : Date.now();
+      var k = lastT ? (now - lastT) / 16.7 : 1;
+      lastT = now;
+      if (k < .4) k = .4;
+      if (k > 3) k = 3;
+
+      ctx.clearRect(0, 0, W, H);
+      var n = 0;
+
+      /* ---------- 线性轨迹 ---------- */
+      if (mouseX !== null){
+        var head = pts[0];
+        if (!head || head.x !== mouseX || head.y !== mouseY){
+          pts.unshift({ x:mouseX, y:mouseY, life:1 });
+          if (pts.length > TRAIL_MAX) pts.length = TRAIL_MAX;
+        }
+      }
+      for (var i = 0; i < pts.length; i++) pts[i].life -= .055 * k;
+      while (pts.length && pts[pts.length - 1].life <= 0) pts.pop();
+
+      if (pts.length > 1){
+        var p0 = pts[0];
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.shadowColor = GLOW_COLOR;
+        ctx.shadowBlur = 12;
+
+        /* 每一小段单独描边：越靠线尾越透明、越细 */
+        for (var kk = 1; kk < pts.length; kk++){
+          var a = pts[kk - 1], b = pts[kk];
+          var t = kk / pts.length;                    /* 0 = 线头，1 = 线尾 */
+          var al = (1 - t) * .9 * Math.max(a.life, 0);
+          if (al > .012){
+            n++;
+            ctx.globalAlpha = al;
+            ctx.lineWidth = 3.4 * (1 - t) + .7;
+            ctx.strokeStyle = RING_COLOR;
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.stroke();
+          }
+        }
+        ctx.shadowBlur = 0;
+      }
+
+      /* ---------- 圆形点击动效 ---------- */
+      for (var j = rings.length - 1; j >= 0; j--){
+        var r = rings[j];
+        if (r.delay > 0){ r.delay -= 16.7 * k; continue; }
+
+        r.p += r.speed * k;
+        if (r.p >= 1){ rings.splice(j, 1); continue; }
+        n++;
+
+        var e = 1 - Math.pow(1 - r.p, 3);             /* 先快后慢，像一圈涟漪 */
+        ctx.globalAlpha = (1 - r.p) * .85;
+        ctx.lineWidth = 3 * (1 - r.p) + .6;
+        ctx.strokeStyle = r.c;
+        ctx.beginPath();
+        ctx.arc(r.x, r.y, r.max * e, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+
+      /* 点击中心的小光点 */
+      for (var m = pluses.length - 1; m >= 0; m--){
+        var q = pluses[m];
+        q.life -= .055 * k;
+        if (q.life <= 0){ pluses.splice(m, 1); continue; }
+        n++;
+        ctx.globalAlpha = q.life * .9;
+        ctx.fillStyle = DOT_COLOR;
+        ctx.beginPath();
+        ctx.arc(q.x, q.y, 2.6 * q.life + .6, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.globalAlpha = 1;
+
+      /* 还有东西在动才继续；否则停下，等下一次 pointermove / pointerdown 唤醒 */
+      if (n > 0 || rings.length || pluses.length){
+        requestAnimationFrame(frame);
+      } else {
+        running = false;
+        lastT = 0;
+      }
+    }
+
+    function play(){
+      if (running) return;
+      running = true;
+      lastT = 0;
+      requestAnimationFrame(frame);
+    }
+
+    window.addEventListener('pointermove', function(e){
+      var x = e.clientX, y = e.clientY;
+      /* 按距离取样，慢慢移动时不会挤出一堆重复点 */
+      if (lastX !== null){
+        var dx = x - lastX, dy = y - lastY;
+        if (dx * dx + dy * dy < 9) return;
+      }
+      lastX = x; lastY = y;
+      mouseX = x; mouseY = y;
+      play();
+    }, {passive:true});
+
+    window.addEventListener('pointerleave', function(){
+      mouseX = mouseY = null;                        /* 指针离开窗口，轨迹自然消失 */
+    }, {passive:true});
+
+    window.addEventListener('pointerdown', function(e){
+      var x = e.clientX, y = e.clientY;
+
+      /* 三层圆环错开出现，半径和速度各不相同，颜色取自当前主题 */
+      rings.push({ x:x, y:y, p:0, max:46,  speed:.055, delay:0,   c:C1 });
+      rings.push({ x:x, y:y, p:0, max:78,  speed:.042, delay:130, c:C2 });
+      rings.push({ x:x, y:y, p:0, max:112, speed:.032, delay:260, c:C3 });
+      pluses.push({ x:x, y:y, life:1 });
+
+      play();
+    }, {passive:true});
+  })();
 
 })();
 </script>
