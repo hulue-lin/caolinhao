@@ -77,28 +77,44 @@ var words = ['正在学 C 语言', '正在啃高等数学', '信息对抗技术�
 
 同时把上面几行的 `--chars:1;` 注释掉（那是给文字模式算字号用的）。
 
-## 留言板配置（需手动做三步）
+## 留言板说明（已配置完成）
 
-留言板用的是 [Giscus](https://giscus.app)，把 GitHub Discussions 当留言后端，不需要自己写服务器。**没配置之前页面上只会显示一段提示文字，不会报错。**
+留言板用的是 [Giscus](https://giscus.app)，把 GitHub Discussions 当留言后端，不需要自己写服务器，也没有额外费用。
 
-1. 打开仓库 **Settings → General → Features**，勾上 **Discussions**
-2. 进入仓库的 **Discussions** 标签，点 **New category** 新建一个分类，名字填 `留言板`，类型选 **Announcements**
-3. 打开 https://giscus.app ，在 repository 里填 `hulue-lin/caolinhao`，分类选刚建的 `留言板`，然后从它给出的代码里复制两个值：
-   - `data-repo-id` → 形如 `R_kgDOxxxxxxx`
-   - `data-category-id` → 形如 `DIC_kwDOxxxxxxx`
-
-4. 把这两个值填进 `index.html` 里的 `GISCUS` 配置：
+**当前状态：已配置完成，无需再操作。** 配置值保存在 `index.html` 里的 `GISCUS` 对象：
 
 ```js
 var GISCUS = {
   repo: 'hulue-lin/caolinhao',
-  repoId: 'R_kgDO...',        // 填这里
-  category: '留言板',
-  categoryId: 'DIC_kwDO...'   // 填这里
+  repoId: 'R_kgDOVHnlAA',
+  category: 'Announcements',
+  categoryId: 'DIC_kwDOVHnlAM4DIae7'
 };
 ```
 
-保存并推送后，留言板就会自动出现。只有两步都填了才会去加载外部脚本，否则保持提示状态。
+前置条件也都已完成：仓库是公开的、giscus App 已安装、Discussions 已启用。
+
+### 如果以后想换分类
+
+1. 打开 https://giscus.app ，填入仓库名
+2. 页面 ↔ discussion 映射选 `pathname`，分类按需选择
+3. 往下滚到「启用 giscus」，从生成的代码里复制 `data-repo-id` 和 `data-category-id`
+4. 替换上面 `GISCUS` 里的对应值
+
+> giscus 只会列出 **Announcements 类型**的分类。本站用的是 GitHub 默认的 `Announcements`，这对访客完全无感 —— 只有仓库维护者在 GitHub 后台才看得到分类名。
+
+### 主题联动
+
+giscus 自带主题，本站的深色 / 浅色切换会通过 `postMessage` 通知它一起换，不需要刷新页面。所以代码里没用官网默认的 `preferred_color_scheme`，而是按当前主题显式传 `dark` / `light`。
+
+### 如果留言板一直不显示
+
+按顺序检查：
+
+- 浏览器控制台（F12）有没有报错
+- 仓库 Settings → Features 里 Discussions 是否还勾着
+- https://github.com/apps/giscus 的安装是否还在（有没有被撤销授权）
+- 有没有装广告拦截插件把 `giscus.app` 拦了
 
 ## 部署
 

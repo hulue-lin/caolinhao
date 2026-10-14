@@ -799,7 +799,9 @@
           并把仓库名和分类 ID 填到代码里的 <code>GISCUS</code> 配置中，这里才会显示。
           具体步骤见 README。
         </p>
-        <div class="giscus-wrap" id="giscusWrap"></div>
+        <div class="giscus-wrap" id="giscusWrap">
+          <noscript>留言板需要 JavaScript 才能加载。</noscript>
+        </div>
       </div>
     </div>
   </section>
@@ -1017,16 +1019,13 @@
 
   /* ===== 7. 留言板（Giscus）=====
      用 GitHub Discussions 当留言后端，不需要自己写服务器。
-     使用前需要三步（详见 README）：
-       1) 仓库 Settings → General → Features 勾上 Discussions
-       2) Discussions 里新建一个分类（比如「留言板」），Announcements 类型
-       3) 在 https://giscus.app 输入仓库名，拿到 repoId 和 categoryId，填到下面
-     两项都是空的时候，页面上只显示提示文字，不会去请求外部脚本。 */
+     配置已在 https://giscus.app 生成，改仓库或换分类时重新生成一次即可。
+     repoId / categoryId 都是公开标识，不是密码或令牌。 */
   var GISCUS = {
-    repo: 'hulue-lin/caolinhao',      /* 仓库，格式 用户名/仓库名 */
-    repoId: '',                        /* 从 giscus.app 复制，形如 R_kgDOxxxxxxx */
-    category: '留言板',                 /* Discussions 里的分类名 */
-    categoryId: ''                     /* 从 giscus.app 复制，形如 DIC_kwDOxxxxxxx */
+    repo: 'hulue-lin/caolinhao',
+    repoId: 'R_kgDOVHnlAA',
+    category: 'Announcements',
+    categoryId: 'DIC_kwDOVHnlAM4DIae7'
   };
 
   (function initGiscus(){
@@ -1038,6 +1037,14 @@
       return;   /* 还没配置，保留页面上的提示文字 */
     }
     if (note) note.style.display = 'none';
+
+    /* giscus 自带主题，得跟本站的深色 / 浅色联动。
+       官网给的 preferred_color_scheme 只认系统偏好，
+       而本站是手动切换的，所以这里按当前主题显式传值。 */
+    var lead = null;   /* giscus 的 iframe 载入后指向它，用来发消息换主题 */
+    function giscusTheme(){
+      return currentTheme() === 'light' ? 'light' : 'dark';
+    }
 
     function mount(){
       var s = document.createElement('script');
@@ -1053,10 +1060,23 @@
       s.setAttribute('data-reactions-enabled', '1');
       s.setAttribute('data-emit-metadata', '0');
       s.setAttribute('data-input-position', 'top');
+      s.setAttribute('data-theme', giscusTheme());
       s.setAttribute('data-lang', 'zh-CN');
       s.setAttribute('data-loading', 'lazy');
       host.appendChild(s);
     }
+
+    /* 切换主题时通知 giscus 一起换，不用整页刷新 */
+    document.addEventListener('themechange', function(){
+      if (!lead){
+        lead = document.querySelector('iframe.giscus-frame');
+        if (lead) lead = lead.contentWindow;
+      }
+      if (!lead) return;
+      try{
+        lead.postMessage({ giscus:{ setConfig:{ theme: giscusTheme() } } }, 'https://giscus.app');
+      }catch(e){}
+    });
 
     /* 滚到留言板附近再加载，首屏不为它付代价 */
     if ('IntersectionObserver' in window){
