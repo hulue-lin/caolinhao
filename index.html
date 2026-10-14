@@ -291,8 +291,9 @@
     display:grid;place-items:center;
     position:relative;
   }
-  /* 圆内文字：字号自动适配，字多了也不会顶到圆边上 */
-  .avatar span{
+  /* 圆内文字：字号自动适配，字多了也不会顶到圆边上。
+     用 .avatar-text 单独选，不会误伤图片（图片在下面单独写规则）。 */
+  .avatar .avatar-text{
     --chars:1;                        /* 圆里的字数，改文字时同步改这里 */
     /* 字号按字数自适应，同时用 min() 限制上限，字少的时候不会撑破圆形 */
     font-size:min(104px, calc(clamp(200px,26vw,280px) * 0.75 / var(--chars)));
@@ -302,7 +303,14 @@
     -webkit-background-clip:text;background-clip:text;color:transparent;
     animation:spin 9s linear infinite reverse;
   }
-  .avatar img{width:100%;height:100%;object-fit:cover;animation:spin 9s linear infinite reverse}
+  /* 头像图片：铺满圆形、不拉伸。刻意不加旋转 —— 照片转起来很怪。
+     悬停时只轻微放大，给一点反馈。 */
+  .avatar img{
+    width:100%;height:100%;object-fit:cover;object-position:center;
+    display:block;
+    transition:transform .5s ease;
+  }
+  .avatar:hover img{transform:scale(1.05)}
   .chip-float{
     position:absolute;padding:8px 14px;border-radius:999px;font-size:13px;font-weight:600;
     background:var(--chip-bg);border:1px solid var(--line-2);
@@ -741,8 +749,8 @@
         <div class="avatar-wrap">
           <div class="avatar-ring">
             <div class="avatar">
-              <!-- 想换成真实照片：把下面的 span 换成 img src="avatar.jpg" alt="头像" -->
-              <span>琳</span>
+              <!-- 想换回文字：把 img 换成 span class="avatar-text"，并改里面的字和 --chars -->
+              <img src="avatar.jpg" alt="曹琳浩的头像" width="813" height="813">
             </div>
           </div>
           <div class="chip-float c1">⚡ 在读大一</div>
@@ -755,7 +763,7 @@
       <div class="stats reveal">
         <div class="stat"><b><span class="count" data-to="1">0</span></b><small>在读年级（大一）</small></div>
         <div class="stat"><b><span class="count" data-to="2">0</span></b><small>正在主攻的课程</small></div>
-        <div class="stat"><b><span class="count" data-to="1">0</span></b><small>在玩的游戏</small></div>
+        <div class="stat"><b><span class="count" data-to="2">0</span></b><small>在玩的游戏</small></div>
         <div class="stat"><b><span class="count" data-to="2026">0</span></b><small>本站建立于</small></div>
       </div>
     </div>
@@ -847,12 +855,12 @@
         </article>
 
         <article class="gcard">
-          <span class="gcard-tag">本页玩的</span>
+          <span class="gcard-tag">本页</span>
           <h3 class="gcard-title">躲陨石</h3>
           <p class="gcard-desc">我照着上面的样子自己写的小游戏。鼠标或手指带着飞船躲开陨石，点一下开火，撑到 60 秒算通关。</p>
           <div class="gcard-foot">
             <button class="gcard-btn" id="gameBtn" type="button">开始游戏</button>
-            <small>鼠标 / 触摸 / 方向键 + 空格</small>
+            <small>鼠标 / WASD / 方向键，空格开火</small>
           </div>
         </article>
       </div>
@@ -1358,7 +1366,10 @@
       var n = 0;
 
       /* ---------- 线性轨迹 ---------- */
-      if (mouseX !== null){
+      /* 玩躲陨石的时候要让位：游戏进行中不画轨迹，免得盖住游戏画面、还和飞船抢视线 */
+      var trailOff = !!document.querySelector('#game[data-mouse-live="1"]');
+
+      if (mouseX !== null && !trailOff){
         var head = pts[0];
         if (!head || head.x !== mouseX || head.y !== mouseY){
           pts.unshift({ x:mouseX, y:mouseY, life:1 });
@@ -1368,7 +1379,7 @@
       for (var i = 0; i < pts.length; i++) pts[i].life -= .055 * k;
       while (pts.length && pts[pts.length - 1].life <= 0) pts.pop();
 
-      if (pts.length > 1){
+      if (pts.length > 1 && !trailOff){
         var p0 = pts[0];
         var pN = pts[pts.length - 1];
         ctx.lineCap = 'round';
@@ -1453,6 +1464,9 @@
     }
 
     window.addEventListener('pointermove', function(e){
+      /* 躲陨石进行中：不产生轨迹，也不播放 */
+      if (document.querySelector('#game[data-mouse-live="1"]')) return;
+
       var x = e.clientX, y = e.clientY;
       /* 按距离取样，慢慢移动时不会挤出一堆重复点 */
       if (lastX !== null){
@@ -1469,6 +1483,9 @@
     }, {passive:true});
 
     window.addEventListener('pointerdown', function(e){
+      /* 躲陨石进行中：不冒圆环。游戏自己会处理点按开火 */
+      if (document.querySelector('#game[data-mouse-live="1"]')) return;
+
       var x = e.clientX, y = e.clientY;
 
       /* 三层圆环错开出现，半径和速度各不相同，颜色取自当前主题 */
@@ -1605,6 +1622,7 @@
         try{ localStorage.setItem('caolinhao-game-best', String(best)); }catch(e){}
       }
       if (btn){ btn.disabled = false; btn.textContent = '再来一次'; }
+      suppressPointerFx(false);   /* 打完了，鼠标特效恢复 */
     }
 
     function update(dt){
@@ -1795,11 +1813,23 @@
     function stop(){
       if (raf){ cancelAnimationFrame(raf); raf = 0; }
     }
+
+    /* 游戏进行中：在这块画布上打个标记，鼠标轨迹 / 点击圆环会自动让位。
+       这样鼠标怎么动都不会有拖尾盖住画面、也不会在手旁边炸开一圈。
+       游戏结束（结算画面）就撤掉标记，特效立刻恢复。 */
+    function suppressPointerFx(on){
+      try{
+        if (on) cvs.setAttribute('data-mouse-live', '1');
+        else    cvs.removeAttribute('data-mouse-live');
+      }catch(e){}
+    }
+
     function start(){
       reset();
       state = 'playing';
+      suppressPointerFx(true);
       if (btn){ btn.disabled = true; btn.textContent = '游戏中…'; }
-      setMsg('躲开陨石，点一下开火');
+      setMsg('躲开陨石，鼠标或 WASD 移动，点一下 / 空格开火');
       stop();
       last = performance.now();
       raf = requestAnimationFrame(loop);
@@ -1824,15 +1854,23 @@
       fire();
     }, {passive:true});
 
-    /* 方向键也能玩：上下左右移动，空格开火 */
+    /* 键盘也能玩：WASD 或方向键移动，空格开火。
+       WASD 要按 e.code（物理按键位置），这样在中文输入法或其他键盘布局下一样有效。 */
     window.addEventListener('keydown', function(e){
       if (state !== 'playing' || wrap.hidden) return;
       var step = 34;
-      if (e.key === 'ArrowUp')    { player.ty -= step; e.preventDefault(); }
-      if (e.key === 'ArrowDown')  { player.ty += step; e.preventDefault(); }
-      if (e.key === 'ArrowLeft')  { player.tx -= step; e.preventDefault(); }
-      if (e.key === 'ArrowRight') { player.tx += step; e.preventDefault(); }
-      if (e.key === ' '){ fire(); e.preventDefault(); }
+      var c = e.code || '';
+      var up    = (c === 'KeyW' || e.key === 'ArrowUp');
+      var down  = (c === 'KeyS' || e.key === 'ArrowDown');
+      var left  = (c === 'KeyA' || e.key === 'ArrowLeft');
+      var right = (c === 'KeyD' || e.key === 'ArrowRight');
+      var shoot = (c === 'Space' || e.key === ' ');
+
+      if (up)    { player.ty -= step; e.preventDefault(); }
+      if (down)  { player.ty += step; e.preventDefault(); }
+      if (left)  { player.tx -= step; e.preventDefault(); }
+      if (right) { player.tx += step; e.preventDefault(); }
+      if (shoot) { fire(); e.preventDefault(); }
     });
 
     /* 滚出视野就暂停，不白烧 CPU */
