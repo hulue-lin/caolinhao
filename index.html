@@ -398,59 +398,68 @@
   }
   .lk-ic{font-size:16px}
 
-  /* ===== 小游戏 ===== */
-  .mini{
-    display:flex;justify-content:center;
-    margin-top:34px;padding:clamp(22px,3vw,32px);border-radius:var(--radius);
-    background:linear-gradient(135deg,rgba(251,191,36,.09),rgba(167,139,250,.08) 60%,transparent);
-    border:1px solid var(--line);
+  /* ===== 小游戏 =====
+     两个游戏用同一套卡片样式，只有按钮里那个 ↗ 和角标文字区分外链 / 本页玩 */
+  .games{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));
+    gap:20px;margin-top:36px;
   }
-  .mini-btn{
-    display:inline-flex;align-items:center;gap:10px;flex:0 0 auto;
-    padding:14px 30px;border-radius:14px;
-    font-size:16.5px;font-weight:700;letter-spacing:.01em;color:#2a1a02;
+  .gcard{
+    position:relative;display:flex;flex-direction:column;gap:10px;
+    padding:26px 24px 22px;border-radius:var(--radius);
+    background:var(--panel);border:1px solid var(--line);
+    transition:transform .25s,border-color .25s,background .25s;
+  }
+  .gcard:hover{transform:translateY(-4px);border-color:var(--line-2);background:var(--panel-2)}
+  /* 两张卡片顶部各有一条橙线，呼应按钮颜色 */
+  .gcard::before{
+    content:"";position:absolute;left:24px;right:24px;top:0;height:2px;border-radius:0 0 2px 2px;
+    background:linear-gradient(90deg,#fbbf24,#fb923c);
+  }
+  .gcard-tag{
+    align-self:flex-start;padding:3px 10px;border-radius:999px;
+    font-size:11.5px;font-weight:600;letter-spacing:.02em;
+    color:#8a5a10;background:rgba(251,191,36,.16);border:1px solid rgba(251,146,60,.34);
+  }
+  html[data-theme="light"] .gcard-tag{color:#7c4a06}
+  .gcard-title{margin:0;font-size:17.5px}
+  .gcard-desc{margin:0;color:var(--muted);font-size:14px;line-height:1.75;flex:1}
+  .gcard-foot{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:4px}
+  .gcard-foot small{color:var(--muted);font-size:12.5px}
+
+  /* 两个游戏的按钮完全同一套样式 */
+  .gcard-btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:9px;
+    flex:0 0 auto;padding:12px 26px;border-radius:13px;border:0;
+    font:inherit;font-size:15.5px;font-weight:700;letter-spacing:.01em;color:#2a1a02;
     background:linear-gradient(135deg,#fbbf24,#fb923c);
     box-shadow:0 10px 30px rgba(251,146,60,.32);
+    cursor:pointer;
     transition:transform .2s,box-shadow .2s,filter .2s;
   }
-  .mini-btn span{font-size:13px;opacity:.7}
-  .mini-btn:hover{
+  .gcard-btn span{font-size:13px;opacity:.7}
+  .gcard-btn:hover{
     transform:translateY(-3px);filter:brightness(1.06);
     box-shadow:0 16px 38px rgba(251,146,60,.48);
   }
+  .gcard-btn:disabled{opacity:.6;cursor:default;transform:none;filter:none}
 
-  /* ===== 自带小游戏（躲陨石） ===== */
-  .game-card{
-    margin-top:22px;padding:clamp(20px,3vw,30px);border-radius:var(--radius);
-    background:var(--panel);border:1px solid var(--line);
-  }
-  .gc-head{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;flex-wrap:wrap}
-  .gc-title{margin:0 0 6px;font-size:17.5px}
-  .gc-sub{margin:0;color:var(--muted);font-size:14px;max-width:52ch}
-  .gc-btn{
-    flex:0 0 auto;padding:11px 24px;border:1px solid var(--line-2);border-radius:12px;
-    font:inherit;font-size:14.5px;font-weight:600;cursor:pointer;
-    color:var(--accent);background:var(--panel-2);
-    transition:transform .2s,border-color .2s,color .2s,background .2s;
-  }
-  .gc-btn:hover{transform:translateY(-2px);border-color:var(--accent);color:var(--text)}
-  .gc-btn:disabled{opacity:.55;cursor:default;transform:none}
-
-  .gc-stage{margin-top:20px}
+  /* 游戏画面：点了「开始游戏」才出现，避免首屏加载就占一大块 */
+  .gstage{margin-top:22px}
   #game{
     display:block;width:100%;height:auto;aspect-ratio:900 / 360;
     border-radius:12px;background:var(--bg-soft);border:1px solid var(--line);
     cursor:crosshair;touch-action:none;   /* 手机上拖动不触发页面滚动 */
   }
-  .gc-hud{
+  .gstage-hud{
     display:flex;flex-wrap:wrap;gap:22px;align-items:center;
     margin:12px 0 0;font-size:13.5px;color:var(--muted);
     font-variant-numeric:tabular-nums;
   }
-  .gc-hud b{color:var(--text);font-weight:700}
-  .gc-msg{margin-left:auto;color:var(--accent);font-weight:600}
+  .gstage-hud b{color:var(--text);font-weight:700}
+  .gstage-msg{margin-left:auto;color:var(--accent);font-weight:600}
 
-  .gc-fallback{
+  .gcard-fallback{
     margin:20px 0 0;padding:14px 18px;border-radius:12px;
     background:var(--panel-2);border:1px dashed var(--line-2);
     color:var(--muted);font-size:13.5px;
@@ -592,7 +601,8 @@
     .game{gap:12px}
     .hobby-link{flex:1 1 auto;justify-content:center}
     .game-info{flex-basis:100%}
-    .mini-btn{flex:1 1 auto;justify-content:center}
+    .gcard-btn{flex:1 1 auto}
+    .gcard-foot{width:100%}
     .theme-btn{width:36px;height:36px;font-size:15px}
     .stats{grid-template-columns:repeat(2,1fr)}
   }
@@ -823,34 +833,42 @@
     <div class="wrap">
       <p class="eyebrow reveal">Mini Game</p>
       <h2 class="title reveal">玩个小游戏？</h2>
+      <p class="lead reveal">页面看累了就摸一会儿。一个是我自己写的，一个是别人做的。</p>
 
-      <div class="mini reveal">
-        <a class="mini-btn" href="https://yhsome.github.io/BigNaiWa/" target="_blank" rel="noopener noreferrer">我尝尝咸淡<span>↗</span></a>
+      <div class="games reveal">
+        <article class="gcard">
+          <span class="gcard-tag">外链</span>
+          <h3 class="gcard-title">合成大奶娃</h3>
+          <p class="gcard-desc">合成类小游戏，玩法简单，一不留神就能玩很久。</p>
+          <div class="gcard-foot">
+            <a class="gcard-btn" href="https://yhsome.github.io/BigNaiWa/" target="_blank" rel="noopener noreferrer">我尝尝咸淡<span>↗</span></a>
+            <small>会跳到另一个网站</small>
+          </div>
+        </article>
+
+        <article class="gcard">
+          <span class="gcard-tag">本页玩的</span>
+          <h3 class="gcard-title">躲陨石</h3>
+          <p class="gcard-desc">我照着上面的样子自己写的小游戏。鼠标或手指带着飞船躲开陨石，点一下开火，撑到 60 秒算通关。</p>
+          <div class="gcard-foot">
+            <button class="gcard-btn" id="gameBtn" type="button">开始游戏</button>
+            <small>鼠标 / 触摸 / 方向键 + 空格</small>
+          </div>
+        </article>
       </div>
 
-      <!-- 下面这个游戏是本页自带的，不需要联网 -->
-      <div class="game-card reveal">
-        <div class="gc-head">
-          <div>
-            <h3 class="gc-title">躲陨石</h3>
-            <p class="gc-sub">用鼠标（手机上用手指）移动飞船，躲开陨石，点一下就能开火。撑到 60 秒算通关。</p>
-          </div>
-          <button class="gc-btn" id="gameBtn" type="button">开始游戏</button>
-        </div>
-
-        <div class="gc-stage" id="gameStage" hidden>
-          <canvas id="game" width="900" height="360"></canvas>
-          <p class="gc-hud">
-            <span>得分 <b id="gameScore">0</b></span>
-            <span>最好 <b id="gameBest">0</b></span>
-            <span class="gc-msg" id="gameMsg">点「开始」进入</span>
-          </p>
-        </div>
-
-        <p class="gc-fallback" id="gameFallback" hidden>
-          本机没有 WebGL 或 Canvas 支持，这个游戏跑不起来。可以试试上面那个外链小游戏。
+      <div class="gstage reveal" id="gameStage" hidden>
+        <canvas id="game" width="900" height="360"></canvas>
+        <p class="gstage-hud">
+          <span>得分 <b id="gameScore">0</b></span>
+          <span>最好 <b id="gameBest">0</b></span>
+          <span class="gstage-msg" id="gameMsg"></span>
         </p>
       </div>
+
+      <p class="gcard-fallback" id="gameFallback" hidden>
+        本机浏览器不支持 Canvas，上面的躲陨石玩不了，可以试试外链那个。
+      </p>
     </div>
   </section>
 
@@ -1242,7 +1260,39 @@
     }
   })();
 
-  /* ===== 8. 鼠标轨迹 + 点击特效 =====
+  /* ===== 8. 主题色读取（给所有 canvas 用）=====
+     读 CSS 变量拿当前主题的颜色。放在这一层而不是特效模块内部，
+     是因为「减弱动态效果」时特效模块会提前 return，那样其他 canvas
+     （比如下面的躲陨石游戏）就拿不到颜色了。 */
+  var FX_COLORS = { c1:'#818cf8', c2:'#a78bfa', c3:'#34d399', t1:'#818cf8', t2:'#a78bfa', glow:'rgba(129,140,248,.9)', dot:'#e8eefc', text:'#e8eefc', muted:'#8d9bbd', line:'rgba(255,255,255,.09)', accent:'#38bdf8' };
+  function readFxColors(){
+    try{
+      var cs = getComputedStyle(document.documentElement);
+      var v = function(n, fb){ var x = (cs.getPropertyValue(n) || '').trim(); return x || fb; };
+      var hex = function(h){
+        h = String(h || '').replace('#','');
+        if (h.length === 3) h = h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+        return /^[0-9a-fA-F]{6}$/.test(h) ? h : null;
+      };
+      function withAlpha(h, a){
+        var x = hex(h);
+        if (!x) return 'rgba(129,140,248,' + a + ')';
+        return 'rgba(' + parseInt(x.slice(0,2),16) + ',' + parseInt(x.slice(2,4),16) + ',' + parseInt(x.slice(4,6),16) + ',' + a + ')';
+      }
+      FX_COLORS.c1 = v('--chroma-a', '#818cf8');
+      FX_COLORS.c2 = v('--accent-2', '#a78bfa');
+      FX_COLORS.c3 = v('--accent-3', '#34d399');
+      FX_COLORS.t1 = v('--chroma-a', '#818cf8');
+      FX_COLORS.t2 = v('--chroma-b', '#a78bfa');
+      /* 亮色主题下中心点要用深色，白点在白底上看不见 */
+      FX_COLORS.dot = (document.documentElement.getAttribute('data-theme') === 'light') ? '#0b1220' : '#e8eefc';
+      FX_COLORS.glow = withAlpha(FX_COLORS.c1, .9);
+    }catch(e){}
+  }
+  readFxColors();                                  /* 先读一次，保证初值就是当前主题 */
+  document.addEventListener('themechange', readFxColors);   /* 切主题时刷新 */
+
+  /* ===== 9. 鼠标轨迹 + 点击特效 =====
      用 canvas 手写，不引外部库：
        轨迹 —— 顺着指针走的一条线，从亮到透明渐隐，线头略粗、线尾收细；
        点击 —— 以点击处为中心向外扩散的圆环（三层错开出现）。
@@ -1284,26 +1334,14 @@
     resize();
     window.addEventListener('resize', resize);
 
-    /* 特效颜色跟着主题走：从 CSS 变量里读当前主题的强调色 */
-    function withAlpha(hex, a){
-      var h = String(hex || '').trim().replace('#', '');
-      if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
-      if (!/^[0-9a-fA-F]{6}$/.test(h)) return 'rgba(56,189,248,' + a + ')';
-      return 'rgba(' + parseInt(h.slice(0, 2), 16) + ',' +
-                       parseInt(h.slice(2, 4), 16) + ',' +
-                       parseInt(h.slice(4, 6), 16) + ',' + a + ')';
-    }
+    /* 特效颜色跟着主题走：统一从 FX_COLORS 取，切主题时刷新 */
     function colors(){
-      var cs = getComputedStyle(document.documentElement);
-      var v = function(n, fb){ var x = (cs.getPropertyValue(n) || '').trim(); return x || fb; };
-      C1 = v('--chroma-a', '#818cf8');     /* 圆环第一层也跟着轨迹走蓝紫 */
-      C2 = v('--accent-2', '#a78bfa');
-      C3 = v('--accent-3', '#34d399');
-      T1 = v('--chroma-a', '#818cf8');
-      T2 = v('--chroma-b', '#a78bfa');
-      RING_COLOR = C1;
-      GLOW_COLOR = withAlpha(C1, .9);
-      DOT_COLOR  = (document.documentElement.getAttribute('data-theme') === 'light') ? '#0b1220' : '#e8eefc';
+      readFxColors();
+      C1 = FX_COLORS.c1; C2 = FX_COLORS.c2; C3 = FX_COLORS.c3;
+      T1 = FX_COLORS.t1; T2 = FX_COLORS.t2;
+      RING_COLOR = FX_COLORS.c1;
+      GLOW_COLOR = FX_COLORS.glow;
+      DOT_COLOR  = FX_COLORS.dot;
     }
     colors();
     document.addEventListener('themechange', colors);
@@ -1443,7 +1481,7 @@
     }, {passive:true});
   })();
 
-  /* ===== 9. 自带小游戏：躲陨石 =====
+  /* ===== 10. 自带小游戏：躲陨石 =====
      纯 canvas 手写，不联网、不依赖任何库。
      玩法：鼠标 / 手指控制飞船，躲开从右边飞来的陨石，点一下开火。
      撑到 60 秒算通关，最高分存在浏览器里。
@@ -1479,10 +1517,35 @@
     try{ best = parseInt(localStorage.getItem('caolinhao-game-best') || '0', 10) || 0; }catch(e){}
     if (bestEl) bestEl.textContent = best;
 
+    /* 主题色：直接用共用读取函数的结果，不自己读 CSS 变量。
+       这样即使「减弱动态效果」把轨迹特效关掉了，游戏照样有颜色。
+       兜底值防止 readFxColors 因为任何原因没跑到。 */
     function css(v, fb){
-      var x = (getComputedStyle(document.documentElement).getPropertyValue(v) || '').trim();
-      return x || fb;
+      var key = {
+        '--text':'text', '--muted':'muted', '--accent':'accent',
+        '--chroma-a':'c1', '--line':'line'
+      }[v];
+      if (key && FX_COLORS[key]) return FX_COLORS[key];
+      try{
+        var x = (getComputedStyle(document.documentElement).getPropertyValue(v) || '').trim();
+        if (x) return x;
+      }catch(e){}
+      return fb;
     }
+    /* 把还需要的那几个也一起读进 FX_COLORS，保证游戏用得上 */
+    function syncGameColors(){
+      readFxColors();
+      try{
+        var cs = getComputedStyle(document.documentElement);
+        var g = function(n, fb){ var x = (cs.getPropertyValue(n) || '').trim(); return x || fb; };
+        FX_COLORS.text   = g('--text',  '#e8eefc');
+        FX_COLORS.muted  = g('--muted', '#8d9bbd');
+        FX_COLORS.line   = g('--line',  'rgba(255,255,255,.09)');
+        FX_COLORS.accent = g('--accent', '#38bdf8');   /* 子弹 / 尾焰用主题强调色 */
+      }catch(e){}
+    }
+    syncGameColors();
+    document.addEventListener('themechange', syncGameColors);
 
     /* 逻辑坐标 ← DOM 坐标 */
     function toGame(e){
@@ -1505,7 +1568,7 @@
       elapsed = 0; spawnTimer = 0;
       if (scoreEl) scoreEl.textContent = '0';
       if (bestEl) bestEl.textContent = best;
-      setMsg('躲开陨石，点一下开火');
+      setMsg('点「开始游戏」进入');
     }
 
     function setMsg(t){ if (msgEl) msgEl.textContent = t || ''; }
@@ -1736,6 +1799,7 @@
       reset();
       state = 'playing';
       if (btn){ btn.disabled = true; btn.textContent = '游戏中…'; }
+      setMsg('躲开陨石，点一下开火');
       stop();
       last = performance.now();
       raf = requestAnimationFrame(loop);
@@ -1789,7 +1853,7 @@
     draw();
   })();
 
-  /* ===== 10. GitHub 项目列表 =====
+  /* ===== 11. GitHub 项目列表 =====
      先用下面的静态数据立刻渲染（保证首屏不会空着、也不怕 API 被限流），
      再尝试读 GitHub 接口补充 star 数、语言、更新时间这些实时信息；
      接口不通就保持静态内容，不会变成空白。 */
