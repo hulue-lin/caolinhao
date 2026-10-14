@@ -278,7 +278,7 @@
   .socials a:hover{color:var(--accent);border-color:var(--accent);transform:translateY(-3px)}
 
   /* 头像 */
-  .avatar-wrap{position:relative;justify-self:center}
+  .avatar-wrap{display:flex;flex-direction:column;align-items:center;justify-self:center}
   /* 外圈光环：静态渐变环，不旋转（之前是 9s 自转，现在整个头像区都不动） */
   .avatar-ring{
     width:clamp(200px,26vw,280px);aspect-ratio:1;border-radius:50%;
@@ -316,16 +316,24 @@
     transition:transform .5s ease;
   }
   .avatar:hover img{transform:scale(1.05)}   /* 只放大，不转 */
+
+  /* 头像下方的三个小标签。
+     原来它们是绝对定位浮在头像四角的，会挡住画面，所以改到头像下面横排。
+     保留轻微上下浮动，但不再遮住任何东西。 */
+  .chips{
+    display:flex;flex-wrap:wrap;justify-content:center;gap:8px;
+    margin-top:16px;max-width:340px;
+  }
   .chip-float{
-    position:absolute;padding:8px 14px;border-radius:999px;font-size:13px;font-weight:600;
+    padding:7px 14px;border-radius:999px;font-size:12.5px;font-weight:600;
     background:var(--chip-bg);border:1px solid var(--line-2);
-    backdrop-filter:blur(8px);white-space:nowrap;
+    white-space:nowrap;
     animation:bob 5s ease-in-out infinite;
   }
-  .chip-float.c1{top:6%;left:-8%;color:var(--accent)}
-  .chip-float.c2{bottom:14%;right:-10%;color:var(--accent-2);animation-delay:-2.4s}
-  .chip-float.c3{bottom:-2%;left:2%;color:var(--accent-3);animation-delay:-3.6s}
-  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-11px)}}
+  .chip-float.c1{color:var(--accent)}
+  .chip-float.c2{color:var(--accent-2);animation-delay:-2.4s}
+  .chip-float.c3{color:var(--accent-3);animation-delay:-3.6s}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
 
   /* ===== 数据条 ===== */
   .stats{
@@ -610,7 +618,8 @@
   /* ===== 响应式 ===== */
   @media (max-width:940px){
     .hero-grid,.about{grid-template-columns:1fr;gap:44px}
-    .avatar-wrap{order:-1;justify-self:start}
+    .avatar-wrap{order:-1;align-items:flex-start;justify-self:start}
+    .chips{justify-content:flex-start}
   }
   @media (max-width:680px){
     .nav-links{
@@ -623,8 +632,6 @@
     .burger{display:block}
     .nav-cta{display:none}
     section{padding:64px 0}
-    .chip-float.c1{left:0}
-    .chip-float.c2{right:0}
     .game{gap:12px}
     .hobby-link{flex:1 1 auto;justify-content:center}
     .game-info{flex-basis:100%}
@@ -774,9 +781,11 @@
               <img src="avatar.jpg" alt="曹琳浩的头像" width="813" height="813">
             </div>
           </div>
-          <div class="chip-float c1">⚡ 在读大一</div>
-          <div class="chip-float c2">◆ 学 C 语言</div>
-          <div class="chip-float c3">★ 高数进行中</div>
+          <div class="chips">
+            <div class="chip-float c1">⚡ 在读大一</div>
+            <div class="chip-float c2">◆ 学 C 语言</div>
+            <div class="chip-float c3">★ 高数进行中</div>
+          </div>
         </div>
       </div>
 
