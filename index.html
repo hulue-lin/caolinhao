@@ -495,6 +495,21 @@
     transition:color .2s,border-color .2s,background .2s;
   }
   .gquit:hover{color:var(--text);border-color:var(--accent);background:var(--panel)}
+  /* 手机端的开火键：默认隐藏，只有窄屏 + 触屏才显示 */
+  .gfire{
+    display:none;width:100%;margin-top:14px;
+    padding:16px;border-radius:14px;border:0;
+    font:inherit;font-size:16px;font-weight:700;letter-spacing:.04em;color:#2a1a02;
+    background:linear-gradient(135deg,#fbbf24,#fb923c);
+    box-shadow:0 8px 24px rgba(251,146,60,.3);
+    cursor:pointer;touch-action:none;          /* 按住时不触发页面滚动 */
+    user-select:none;-webkit-user-select:none;
+    transition:transform .1s,filter .1s;
+  }
+  .gfire:active{transform:scale(.98);filter:brightness(1.08)}
+  @media (max-width:820px){
+    .gfire{display:block}
+  }
 
   .gcard-fallback{
     margin:20px 0 0;padding:14px 18px;border-radius:12px;
@@ -888,7 +903,7 @@
           <p class="gcard-desc">鼠标或手指带着飞船躲开陨石，点一下开火，撑到 60 秒算通关。</p>
           <div class="gcard-foot">
             <button class="gcard-btn" id="gameBtn" type="button">开始游戏</button>
-            <small>鼠标 / WASD / 方向键，空格开火</small>
+            <small>鼠标 / WASD / 方向键，空格开火 ｜ 手机拖动画布 + 开火键</small>
           </div>
         </article>
       </div>
@@ -901,6 +916,8 @@
           <span class="gstage-msg" id="gameMsg"></span>
           <button class="gquit" id="gameQuit" type="button" hidden>结束游戏</button>
         </p>
+        <!-- 手机上用的开火键：手指拖动画布移动飞船，按住这个键开火，两个动作互不干扰 -->
+        <button class="gfire" id="gameFire" type="button" hidden>按住开火</button>
       </div>
 
       <p class="gcard-fallback" id="gameFallback" hidden>
@@ -1541,6 +1558,7 @@
     var msgEl = document.getElementById('gameMsg');
     var fbEl = document.getElementById('gameFallback');
     var quitBtn = document.getElementById('gameQuit');
+    var fireBtn = document.getElementById('gameFire');
     if (!cvs || !btn || !wrap) return;
 
     if (!cvs.getContext){
@@ -1552,9 +1570,15 @@
     var ctx = cvs.getContext('2d');
     var DPR = Math.min(window.devicePixelRatio || 1, 2);
     var W = 900, H = 360;                 /* 逻辑坐标，CSS 负责缩放显示 */
-    var mobile = (window.innerWidth || 999) < 700;
     var MAX_HP = 3;
     var TIME_LIMIT = 60;                  /* 秒 */
+
+    /* 触屏设备：用「拖动移动 + 按住开火键」的方式玩。
+       触摸判断用 matchMedia 的 pointer:coarse，比单纯量屏幕宽度准 ——
+       桌面浏览器把窗口拖窄时不会误判成手机。 */
+    var coarse = !!(window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
+    var FIRE_GAP = .16;                   /* 按住开火键时的连发间隔（秒） */
+    var fireHeld = false, fireCd = 0;
 
     var player, enemies, bullets, stars;
     var score, best = 0, hp, timeLeft, elapsed, spawnTimer;
@@ -1656,6 +1680,8 @@
       }
       if (btn){ btn.disabled = false; btn.textContent = '再来一次'; }
       if (quitBtn) quitBtn.hidden = true;      /* 结束了就不再显示「结束游戏」 */
+      if (fireBtn) fireBtn.hidden = true;
+      fireHeld = false;
       suppressPointerFx(false);   /* 打完了，鼠标特效恢复 */
     }
 
@@ -1668,6 +1694,12 @@
 
       /* 分数只靠存活涨得很慢，所以把存活分压到很低，主要靠打陨石 */
       score += dt * 2;
+
+      /* 按住开火键就持续射击 */
+      if (fireHeld){
+        fireCd -= dt;
+        if (fireCd <= 0){ fire(); fireCd = FIRE_GAP; }
+      }
 
       /* 飞船平滑跟随指针 */
       player.x += (player.tx - player.x) * Math.min(dt * 14, 1);
@@ -1864,7 +1896,9 @@
       suppressPointerFx(true);
       if (btn){ btn.disabled = true; btn.textContent = '游戏中…'; }
       if (quitBtn) quitBtn.hidden = false;    /* 进行中才给出「结束游戏」 */
-      setMsg('躲开陨石，鼠标或 WASD 移动，点一下 / 空格开火');
+      if (fireBtn) fireBtn.hidden = !coarse;  /* 开火键只给触屏设备 */
+      fireHeld = false;
+      setMsg(coarse ? '拖动画面移动飞船，按住下面「开火」' : '躲开陨石，鼠标或 WASD 移动，点一下 / 空格开火');
       stop();
       last = performance.now();
       raf = requestAnimationFrame(loop);
@@ -1874,6 +1908,24 @@
       wrap.hidden = false;
       start();
     });
+
+    /* 手机端的开火键：按住连发，松开停止。
+       用 pointer 事件 + 立即 setPointerCapture，手指滑出按钮范围也不会断，
+       同时 preventDefault 避免长按弹出系统菜单或被当成页面滚动。 */
+    if (fireBtn){
+      var release = function(){ fireHeld = false; };
+      fireBtn.addEventListener('pointerdown', function(e){
+        e.preventDefault();
+        if (state !== 'playing') return;
+        fireHeld = true;
+        fireCd = 0;                 /* 按下立刻打一发，不用等间隔 */
+        try{ fireBtn.setPointerCapture(e.pointerId); }catch(err){}
+      });
+      fireBtn.addEventListener('pointerup', release);
+      fireBtn.addEventListener('pointercancel', release);
+      fireBtn.addEventListener('lostpointercapture', release);
+      fireBtn.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+    }
 
     /* 结束游戏：立刻判定为已结束、结算本次得分，并把按钮恢复成「再来一次」 */
     if (quitBtn){
@@ -1894,7 +1946,8 @@
       if (state !== 'playing') return;
       var p = toGame(e);
       player.tx = p.x; player.ty = p.y;   /* 手指点下去就地定位，避免够不到 */
-      fire();
+      /* 触屏设备用下面的开火键射击，点画面只负责移动，避免一个手势干两件事 */
+      if (!coarse) fire();
     }, {passive:true});
 
     /* 键盘也能玩：WASD 或方向键移动，空格开火。
