@@ -32,9 +32,15 @@
     --glow-3:    rgba(52,211,153,.28);
     --nav-bg:    rgba(7,11,22,.62);
     --nav-bg-2:  rgba(7,11,22,.90);
-    --fx-color:  #38bdf8;
     --chip-bg:   rgba(10,17,32,.86);
     --inset-bg:  rgba(7,11,22,.55);
+    /* 两类颜色分开命名，避免混用：
+       --blue-a/b  是「实色」，用于渐变底色（扫描线、按钮）；
+       --glow-a/b/c 是「半透明」，用于发光阴影。 */
+    --chroma-a:  #818cf8;   /* 轨迹 / 圆环：蓝紫 */
+    --chroma-b:  #a78bfa;   /* 轨迹末端：紫 */
+    --blue-a:    #38bdf8;
+    --blue-b:    #7dd3fc;
     --glow-a:    rgba(56,189,248,.55);
     --glow-b:    rgba(56,189,248,.28);
     --glow-c:    rgba(56,189,248,.14);
@@ -60,15 +66,18 @@
     --glow-3:    rgba(5,150,105,.10);
     --nav-bg:    rgba(244,246,252,.72);
     --nav-bg-2:  rgba(244,246,252,.95);
-    --fx-color:  #0f766e;
+    --chroma-a:  #6366f1;   /* 轨迹 / 圆环：蓝紫 */
+    --chroma-b:  #7c3aed;   /* 轨迹末端：紫 */
+    --blue-a:    #0284c7;   /* 蓝色按钮渐变用：深蓝 → 浅蓝 */
+    --blue-b:    #38bdf8;
     --chip-bg:   rgba(255,255,255,.92);
     --inset-bg:  #ffffff;
-    --glow-a:    rgba(15,118,110,.32);
-    --glow-b:    rgba(15,118,110,.18);
-    --glow-c:    rgba(15,118,110,.10);
-    --tint-1:    rgba(15,118,110,.10);
+    --glow-a:    rgba(2,132,199,.32);
+    --glow-b:    rgba(2,132,199,.20);
+    --glow-c:    rgba(2,132,199,.12);
+    --tint-1:    rgba(2,132,199,.10);
     --tint-2:    rgba(109,74,239,.09);
-    --link-line: rgba(15,118,110,.55);
+    --link-line: rgba(2,132,199,.55);
     --violet-line: rgba(109,74,239,.50);
   }
 
@@ -109,7 +118,7 @@
   }
   .bg .scan{
     position:absolute;left:0;right:0;height:1px;
-    background:linear-gradient(90deg,transparent,var(--glow-a),transparent);
+    background:linear-gradient(90deg,transparent,var(--blue-a),transparent);
     animation:scan 7s linear infinite;opacity:.7;
   }
   html[data-theme="light"] .bg .scan{
@@ -182,7 +191,7 @@
   .nav-links a:hover,.nav-links a.active{color:var(--text);background:var(--panel-2)}
   .nav-cta{
     padding:9px 18px;border-radius:999px;font-size:14.5px;font-weight:600;
-    color:#05121c;background:linear-gradient(135deg,var(--accent),#7dd3fc);
+    color:#05121c;background:linear-gradient(135deg,var(--blue-a),var(--blue-b));
     box-shadow:0 8px 24px var(--glow-c);
     transition:transform .2s,box-shadow .2s;white-space:nowrap;
   }
@@ -255,7 +264,7 @@
   .btn:hover{transform:translateY(-2px);border-color:var(--accent);background:var(--panel-2)}
   .btn.primary{
     color:#05121c;border-color:transparent;
-    background:linear-gradient(135deg,var(--accent),#7dd3fc);
+    background:linear-gradient(135deg,var(--blue-a),var(--blue-b));
     box-shadow:0 10px 30px var(--glow-c);
   }
   .btn.primary:hover{box-shadow:0 14px 36px var(--glow-b)}
@@ -794,10 +803,12 @@
       <p class="lead reveal">路过就留句话吧 —— 用 GitHub 账号登录即可，不需要注册别的东西。</p>
 
       <div class="reveal">
-        <p class="guest-note" id="guestNote">
-          留言板基于 GitHub Discussions，需要先在仓库里开启 Discussions，
-          并把仓库名和分类 ID 填到代码里的 <code>GISCUS</code> 配置中，这里才会显示。
-          具体步骤见 README。
+        <!-- 这里平时是隐藏的，只有留言板加载失败时才会显示 -->
+        <p class="guest-note" id="guestNote" hidden>
+          留言板加载失败 —— 多半是网络访问不到 <code>giscus.app</code>（它的服务本身是正常的）。
+          如果你开了代理，检查一下代理规则有没有覆盖这个域名，然后刷新重试。
+          也可以直接到 GitHub 上留言：
+          <a class="fact-link" href="https://github.com/hulue-lin/caolinhao/discussions" target="_blank" rel="noopener noreferrer">仓库的 Discussions</a>。
         </p>
         <div class="giscus-wrap" id="giscusWrap">
           <noscript>留言板需要 JavaScript 才能加载。</noscript>
@@ -1034,16 +1045,34 @@
     if (!host) return;
 
     if (!GISCUS.repoId || !GISCUS.categoryId){
-      return;   /* 还没配置，保留页面上的提示文字 */
+      return;   /* 还没配置，什么都不做 */
     }
-    if (note) note.style.display = 'none';
 
     /* giscus 自带主题，得跟本站的深色 / 浅色联动。
        官网给的 preferred_color_scheme 只认系统偏好，
        而本站是手动切换的，所以这里按当前主题显式传值。 */
-    var lead = null;   /* giscus 的 iframe 载入后指向它，用来发消息换主题 */
+    var lead = null;       /* giscus 的 iframe 载入后指向它，用来发消息换主题 */
+    var failed = false;    /* 加载失败只提示一次 */
+    var okTimer = null;    /* 超时兜底：脚本没拦住但也没真正加载出来 */
+
     function giscusTheme(){
       return currentTheme() === 'light' ? 'light' : 'dark';
+    }
+
+    /* 网络到不了 giscus.app 时（国内常见），给一句人话提示 + GitHub 直达链接，
+       而不是让访客看到一片空白。 */
+    function fail(){
+      if (failed) return;
+      failed = true;
+      if (okTimer){ clearTimeout(okTimer); okTimer = null; }
+      var box = host.querySelector('.giscus');
+      if (box) box.style.display = 'none';
+      if (note) note.hidden = false;
+    }
+    function succeed(){
+      failed = false;
+      if (okTimer){ clearTimeout(okTimer); okTimer = null; }
+      if (note) note.hidden = true;
     }
 
     function mount(){
@@ -1063,15 +1092,23 @@
       s.setAttribute('data-theme', giscusTheme());
       s.setAttribute('data-lang', 'zh-CN');
       s.setAttribute('data-loading', 'lazy');
+
+      /* 脚本本身拿不到（网络被拦 / 被广告插件屏蔽） */
+      s.addEventListener('error', fail);
+
+      /* 脚本拿到了，但 giscus 没能建出 iframe（接口报错、被拦在请求阶段） */
+      okTimer = setTimeout(function(){
+        if (!host.querySelector('.giscus-frame')) fail();
+        else succeed();
+      }, 8000);
+
       host.appendChild(s);
     }
 
-    /* 切换主题时通知 giscus 一起换，不用整页刷新 */
+    /* 主题切换时通知 giscus 一起换，不用整页刷新 */
     document.addEventListener('themechange', function(){
-      if (!lead){
-        lead = document.querySelector('iframe.giscus-frame');
-        if (lead) lead = lead.contentWindow;
-      }
+      var f = host.querySelector('iframe.giscus-frame');
+      if (f) lead = f.contentWindow;
       if (!lead) return;
       try{
         lead.postMessage({ giscus:{ setConfig:{ theme: giscusTheme() } } }, 'https://giscus.app');
@@ -1111,10 +1148,11 @@
     var W = 0, H = 0;
 
     var TRAIL_MAX = 26;      /* 轨迹最多记这么多个取样点 */
-    var RING_COLOR = '#38bdf8';
-    var GLOW_COLOR = 'rgba(56,189,248,.9)';
+    var RING_COLOR = '#818cf8';
+    var GLOW_COLOR = 'rgba(129,140,248,.9)';
     var DOT_COLOR  = '#e8eefc';
-    var C1 = '#38bdf8', C2 = '#a78bfa', C3 = '#34d399';   /* 三层圆环的颜色，随主题变 */
+    var C1 = '#818cf8', C2 = '#a78bfa', C3 = '#34d399';   /* 三层圆环的颜色，随主题变 */
+    var T1 = '#818cf8', T2 = '#a78bfa';                   /* 轨迹渐变：起点 → 终点 */
 
     var pts = [];            /* 轨迹取样点：{x, y}，越靠前越新 */
     var rings = [];          /* 正在扩散的圆环 */
@@ -1146,9 +1184,11 @@
     function colors(){
       var cs = getComputedStyle(document.documentElement);
       var v = function(n, fb){ var x = (cs.getPropertyValue(n) || '').trim(); return x || fb; };
-      C1 = v('--accent',   '#38bdf8');
+      C1 = v('--chroma-a', '#818cf8');     /* 圆环第一层也跟着轨迹走蓝紫 */
       C2 = v('--accent-2', '#a78bfa');
       C3 = v('--accent-3', '#34d399');
+      T1 = v('--chroma-a', '#818cf8');
+      T2 = v('--chroma-b', '#a78bfa');
       RING_COLOR = C1;
       GLOW_COLOR = withAlpha(C1, .9);
       DOT_COLOR  = (document.documentElement.getAttribute('data-theme') === 'light') ? '#0b1220' : '#e8eefc';
@@ -1180,10 +1220,19 @@
 
       if (pts.length > 1){
         var p0 = pts[0];
+        var pN = pts[pts.length - 1];
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
         ctx.shadowColor = GLOW_COLOR;
         ctx.shadowBlur = 12;
+
+        /* 沿轨迹方向做一条渐变：线头偏蓝、线尾偏紫，再配合逐段的透明度和粗细衰减 */
+        var grad;
+        try{
+          grad = ctx.createLinearGradient(p0.x, p0.y, pN.x, pN.y);
+          grad.addColorStop(0, T1);
+          grad.addColorStop(1, T2);
+        }catch(e){ grad = T1; }
 
         /* 每一小段单独描边：越靠线尾越透明、越细 */
         for (var kk = 1; kk < pts.length; kk++){
@@ -1194,7 +1243,7 @@
             n++;
             ctx.globalAlpha = al;
             ctx.lineWidth = 3.4 * (1 - t) + .7;
-            ctx.strokeStyle = RING_COLOR;
+            ctx.strokeStyle = grad;
             ctx.beginPath();
             ctx.moveTo(a.x, a.y);
             ctx.lineTo(b.x, b.y);
