@@ -82,15 +82,15 @@ var words = ['正在学 C 语言', '正在啃高等数学', '信息对抗技术�
 
 「我的项目」里那张卡片本身**不存文件**，只指向另一个仓库：
 
-- 仓库：https://github.com/hulue-lin/welearn工具
-- 直链：`https://github.com/hulue-lin/welearn工具/raw/main/welearn-assistant-v114514.zip`
+- 仓库：https://github.com/hulue-lin/welearn-tool
+- 直链：`https://github.com/hulue-lin/welearn-tool/raw/main/welearn-assistant-v114514.zip`
 
 这样做的原因：41 MB 的二进制放进网站仓库会永久留在 git 历史里，每次 clone 都得拖一遍；放到独立仓库后网站的仓库一直很小。
 
 **发新版本时**：把新 zip 推到那个工具仓库（覆盖同名文件或换成新文件名），然后只改 `index.html` 里这一处链接：
 
 ```html
-<a class="tool-dl" href="https://github.com/hulue-lin/welearn工具/raw/main/welearn-assistant-v114514.zip" ...>下载 ↓</a>
+<a class="tool-dl" href="https://github.com/hulue-lin/welearn-tool/raw/main/welearn-assistant-v114514.zip" ...>下载 ↓</a>
 ```
 
 卡片上的版本号 `<em>v.114514</em>` 和「41.3 MB」也一起改。
