@@ -15,9 +15,10 @@
 | 首屏 | 姓名、学院专业、可点击切换的关键词轮播、数据条 |
 | 关于我 | 自我介绍、学校 / 家乡 / 专业 / 联系方式等信息卡 |
 | 平时喜欢 | 在玩的游戏和在看的书，含 UID / ID |
-| 玩个小游戏 | 跳转到一个在线小游戏 |
+| 玩个小游戏 | 两个入口：外链「合成大奶娃」，以及本站自带的 Canvas 小游戏「躲陨石」 |
 | 正在学习 | 目前主攻的课程 |
 | 经历 | 时间线（大学 / 高中 / 接下来的计划） |
+| 我的项目 | GitHub 仓库列表（读 GitHub 接口补 star / 语言 / 更新时间）+ 「WeLearn 助手」下载卡片 |
 | 留言板 | 基于 GitHub Discussions 的留言区 |
 | 联系 | 电话 / 微信、邮箱、QQ |
 
@@ -76,6 +77,23 @@ var words = ['正在学 C 语言', '正在啃高等数学', '信息对抗技术�
 ```
 
 同时把上面几行的 `--chars:1;` 注释掉（那是给文字模式算字号用的）。
+
+## 工具下载（WeLearn 助手）
+
+「我的项目」里那张卡片本身**不存文件**，只指向另一个仓库：
+
+- 仓库：https://github.com/hulue-lin/welearn工具
+- 直链：`https://github.com/hulue-lin/welearn工具/raw/main/welearn-assistant-v114514.zip`
+
+这样做的原因：41 MB 的二进制放进网站仓库会永久留在 git 历史里，每次 clone 都得拖一遍；放到独立仓库后网站的仓库一直很小。
+
+**发新版本时**：把新 zip 推到那个工具仓库（覆盖同名文件或换成新文件名），然后只改 `index.html` 里这一处链接：
+
+```html
+<a class="tool-dl" href="https://github.com/hulue-lin/welearn工具/raw/main/welearn-assistant-v114514.zip" ...>下载 ↓</a>
+```
+
+卡片上的版本号 `<em>v.114514</em>` 和「41.3 MB」也一起改。
 
 ## 留言板说明（已配置完成）
 
@@ -136,7 +154,10 @@ git push
 
 ```
 caolinhao/
-├── index.html    站点全部内容（HTML + CSS + JS）
-├── .nojekyll     告诉 GitHub Pages 跳过 Jekyll
-└── README.md     本文件
+├── index.html      站点全部内容（HTML + CSS + JS）
+├── avatar.jpg      头像（813×813）
+├── .nojekyll       告诉 GitHub Pages 跳过 Jekyll
+└── README.md       本文件
 ```
+
+> WeLearn 助手的压缩包不在这个仓库里，见上一节「工具下载」。
